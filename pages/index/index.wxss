@@ -1,0 +1,48 @@
+.section,
+.dev {
+    padding: 20rpx;
+    margin-bottom: 15rpx;
+    background: #ffffff;
+    border-bottom: 1rpx solid #dedede;
+}
+
+.title {
+    position: relative;
+    text-align: center;
+    font-weight: bold;
+    line-height: 2;
+}
+
+.dev {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.dev__info {
+    flex: 1;
+    padding-left: 12rpx;
+    margin-right: 16rpx;
+    overflow: hidden;
+}
+
+.dev__info__deviceId {
+    padding-top: 8rpx;
+    font-size: 28rpx;
+}
+
+.dev__rssi {
+    flex-shrink: 0;
+    font-size: 26rpx;
+    padding-right: 12rpx;
+}
+
+.dev__rssi__image {
+    display: block;
+    width: 50rpx;
+    height: 50rpx;
+}
+
+.dev__rssi__number {
+    font-size: 24rpx;
+}

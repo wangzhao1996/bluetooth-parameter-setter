@@ -1,0 +1,16 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/test/index",
+        "pages/settingsXC/index",
+        "pages/settingsBMS/index"
+    ],
+    "window": {
+        "navigationBarBackgroundColor": "#0090ff",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#efefef",
+        "backgroundTextStyle": "dark",
+        "navigationBarTitleText": "蓝牙设备"
+    },
+    "lazyCodeLoading": "requiredComponents"
+}

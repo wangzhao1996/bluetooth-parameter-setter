@@ -1,0 +1,64 @@
+<!--page/settings/index.wxml-->
+<view class="PageWarpper">
+    <view class="PageItem">
+        <van-row>
+            <van-col offset="8" span="8" data-item="{{ currentSOC }}" bindtap="setItemClick">
+                <van-circle layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="{{ gradientColor }}" value="{{ renderObj.NwCarSoc }}" text="{{ renderObj.NwCarSoc }}%" />
+            </van-col>
+        </van-row>
+        <van-row>
+            <van-col offset="8" span="8" custom-class="TextCenter">{{ renderObj.NowStatus * 1 ? '正在充电' : '' }}</van-col>
+        </van-row>
+    </view>
+    <view class="PageItem">
+        <van-cell-group>
+            <block wx:for="{{ renderItems }}" wx:key="index">
+                <!-- 电池类型、充电模式 -->
+                <block wx:if="{{ item.key === 'BattType' || item.key === 'CharMode' }}">
+                    <van-field label="{{ item.actionLabelName }}" value="{{ item.actionList[item.title * 1] }}" label-class="rendervin__color" input-class="rendervin__color" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}">
+                        <van-button wx:if="{{ !item.isReadyOnly }}" slot="button" size="small" type="primary" data-item="{{ item }}" bind:click="setItemClick">{{ renderObj.BattType ? '更新' : '设置' }}{{ item.actionLabelName }}</van-button>
+                    </van-field>
+                </block>
+            </block>
+            <!-- 车架号VIN -->
+            <van-field value="{{ renderObj.VinCode }}" label-class="rendervin__color" input-class="rendervin__color" placeholder-style="color: #333333;" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}" label="车架号VIN码" placeholder="暂未设置车架号VIN码">
+                <van-button slot="button" size="small" type="primary" data-item="{{ currentVIN }}" bind:click="setItemClick">{{ renderObj.VinCode ? '更新VIN码' : '设置VIN码' }}</van-button>
+            </van-field>
+        </van-cell-group>
+        <van-grid column-num="{{ 5 }}">
+            <block wx:for="{{ renderItems }}" wx:key="index">
+                <block wx:if="{{ !item.isHideItem }}">
+                    <van-grid-item content-class="TextCenter" icon="/imgs/icon/{{ item.imgName }}.png" text="{{ item.label }}" subtext="{{ item.title }}{{ item.subtitle }}" data-item="{{ item }}" bindtap="setItemClick" />
+                </block>
+            </block>
+        </van-grid>
+    </view>
+    <view class="PageWarpperBottom">
+        <view class="PageItem PageBottom">
+            <van-row>
+                <van-col offset="2" span="20">
+                    <van-button wx:if="{{ renderObj.NowStatus * 1 }}" type="danger" size="large" bind:click="settingEndClick">停止充电</van-button>
+                    <van-button wx:else type="primary" size="large" bind:click="settingStartClick">等待充电</van-button>
+                </van-col>
+            </van-row>
+        </view>
+    </view>
+</view>
+<!-- 选择项目 -->
+<van-popup show="{{ settingPickerShow }}" round="{{ true }}" position="bottom" z-index="1000" bind:close="pickerCancelClick">
+    <van-picker show-toolbar="{{ true }}" default-index="{{ settingPickerInfo.title * 1 }}" columns="{{ settingPickerInfo.actionList }}" bind:confirm="pickerConfirmClick" bind:cancel="pickerCancelClick" />
+</van-popup>
+<!-- 设置项目 -->
+<van-popup show="{{ settingPopupShow }}" round="{{ true }}" z-index="1000" custom-style="width: 90%;" bind:close="setItemHide">
+    <view class="setting-popup">
+        <view class="setting-popup__title">设置【{{ settingPopupInfo.actionLabelName }}】</view>
+        <view class="setting-popup__preview">{{ settingPopupValue }}</view>
+        <form bindsubmit="formSubmitClick">
+            <view class="setting-popup__inputbox border-box">
+                <van-field wx:if="{{ settingPopupShow }}" name="{{ settingPopupInfo.key }}" type="{{ settingPopupInfo.actionInputType }}" value="{{ settingPopupValue }}" data-name="{{ settingPopupInfo.key }}" bind:change="valueChange" maxlength="{{ 17 }}" center="{{ true }}" clearable="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}" placeholder="请输入">
+                    <van-button slot="button" size="small" type="primary" form-type="submit">设置</van-button>
+                </van-field>
+            </view>
+        </form>
+    </view>
+</van-popup>

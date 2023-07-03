@@ -1,0 +1,6 @@
+/* page/settings/index.wxss */
+@import "../../styles/setting-popup.wxss";
+
+page {
+    background: linear-gradient(#e8ebe3, #dfe5dd);
+}
