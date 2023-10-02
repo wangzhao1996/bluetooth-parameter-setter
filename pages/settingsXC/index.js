@@ -4,15 +4,16 @@ import setting_xc from '../../behavior/setting_xc';
 Page({
     behaviors: [setting, setting_xc],
     data: {
+        navTitle: ``
     },
 
     onLoad: function (options) {
         const btDevId = options.devId ? decodeURIComponent(options.devId) : '';
         const btName = options.name ? decodeURIComponent(options.name) : '';
-        btName && wx.setNavigationBarTitle({
-            title: btName
-        })
         this.data.devId = btDevId;
+        btName && this.setData({
+            navTitle: btName
+        })
         this.createBLEConnection(btDevId);
         this.handleRenderData();
     },
@@ -24,5 +25,11 @@ Page({
     onUnload: function () {
         wx.hideLoading();
         this.onUnloadClick();
+    },
+
+    onShareAppMessage: function () {
+        return {
+            path: `/pages/index/index`
+        }
     }
 });

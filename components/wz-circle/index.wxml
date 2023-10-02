@@ -1,0 +1,7 @@
+<!--components/wz-circle/index.wxml-->
+<view class="circle">
+    <slot wx:if="{{ renderSize }}"></slot>
+    <view class="circle circle1" style="height: {{ renderSize }}px">
+        <canvas type="2d" id="myCanvas" width="{{ renderSize }}" height="{{ renderSize }}" />
+    </view>
+</view>

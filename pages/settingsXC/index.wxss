@@ -1,6 +1,143 @@
 /* page/settings/index.wxss */
-@import "../../styles/setting-popup.wxss";
 
-page {
-    background: linear-gradient(#e8ebe3, #dfe5dd);
+.page {
+    background: linear-gradient(#31D9AC 40%, #ffffff);
+    color: #ffffff;
+}
+
+.PageWarpper {
+    align-items: center;
+}
+
+.circle-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 50vw;
+}
+
+.circle-info {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.circle-title {
+    font-size: 42rpx;
+}
+
+.circle-subtitle {
+    font-size: 20rpx;
+}
+
+.lightning {
+    display: block;
+    width: 72rpx;
+    height: 72rpx;
+}
+
+.info-position {
+    position: absolute;
+    left: 32rpx;
+    bottom: 0;
+    font-size: 24rpx;
+}
+
+.info-items {
+    margin: 24rpx auto 0;
+    width: 686rpx;
+    height: 180rpx;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    border-radius: 16rpx;
+    box-shadow: 2rpx 2rpx 12rpx 2rpx rgba(238, 242, 244, 1);
+    color: #333333;
+}
+
+.info-item {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-item-value {
+    font-size: 48rpx;
+}
+
+.info-item-label {
+    font-size: 24rpx;
+    color: #999999;
+}
+
+.info-seting {
+    margin: 24rpx auto 0;
+    width: 686rpx;
+    padding: 24rpx;
+    background-color: #ffffff;
+    border-radius: 16rpx;
+    box-sizing: border-box;
+    color: #333333;
+    box-shadow: 2rpx 2rpx 12rpx 2rpx rgba(238, 242, 244, 1);
+}
+
+.info-seting-title {
+    font-size: 32rpx;
+    font-weight: bold;
+}
+
+.info-setting-item {
+    margin-top: 24rpx;
+    width: 100%;
+    padding: 24rpx;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 8rpx;
+    box-shadow: 0rpx 0rpx 4rpx #31D9AC70;
+    box-sizing: border-box;
+}
+
+.info-setting-action-icon {
+    display: block;
+    width: 48rpx;
+    height: 48rpx;
+}
+
+.info-setting-action-value {
+    width: 100rpx;
+    text-align: center;
+}
+
+.PageWarpperBottom {
+    margin-top: 48rpx;
+    padding-bottom: 0;
+    height: 176rpx;
+    box-sizing: border-box;
+}
+
+.PageWarpperBottomFixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 60rpx;
+}
+
+.button-start,
+.button-end {
+    color: #ffffff;
+}
+
+.button-start {
+    background-color: #31D9AC !important;
+}
+
+.button-end {
+    background-color: #EC9F46 !important;
 }

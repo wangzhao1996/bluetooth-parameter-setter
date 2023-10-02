@@ -30,10 +30,6 @@ module.exports = Behavior({
     data: {
         __tempData: JSON.parse(JSON.stringify(__tempData)),
         renderObj: JSON.parse(JSON.stringify(__tempData)),
-        gradientColor: { // 设置渐变
-            '100%': '#ffffff',
-            '0%': '#a9c1af',
-        },
         currentSOC: { // 当前SOC
             key: `BatSoc`,
             label: `当前SOC`,
@@ -56,41 +52,6 @@ module.exports = Behavior({
             actionInputType: `number`
         },
         renderItems: [{
-            key: `SoftVer`,
-            label: `软件版本\n`,
-            title: `v1.0`,
-            subtitle: ``,
-            imgName: `daima`,
-            isHideItem: true, // 不展示
-            isReadyOnly: true, // 只读
-            actionLabelName: `软件版本`,
-        }, {
-            key: `RunCode`, // 字段 key
-            label: `运行代码\n`, // 描述
-            title: `0`, // 数据
-            subtitle: ``, // 单位
-            imgName: `daima`, // 图标名称
-            isHideItem: true, // 不展示
-            isReadyOnly: true, // 只读
-            actionLabelName: `运行代码`,
-            actionList: {
-                80: `通讯中`,
-                81: `动力电池组电压高于充电电压`,
-                82: `握手阶段接收BMS辨识帧编号错误`,
-                83: `开始电压过高或者过低`,
-                85: `通讯接收数据超时`,
-                86: `到达目标SOC值`,
-                87: `最高允许充电电压大于模块最大输出电压`,
-                102: `来自软件下发的关机命令`,
-                103: `来自手动进行的关机命令`,
-                105: `达到所需SOC值`,
-                121: `车辆SOC电量过低关机`,
-                122: `握手阶段超时`,
-                123: `配置阶段超时`,
-                124: `充电阶段超时`,
-                125: `未知阶段超时`,
-            }
-        }, {
             key: `SetDevSoc`,
             label: `终止SOC\n`,
             title: `0`,
@@ -98,44 +59,8 @@ module.exports = Behavior({
             imgName: `daima`,
             isReadyOnly: true, // 只读
         }, {
-            key: `MaxHigVol`,
-            // label: `最高电压\n`,
-            label: `最大电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            actionType: `input`,
-            // actionLabelName: `最高电压`,
-            actionLabelName: `最大电压`,
-            actionInputType: `digit`
-        }, {
-            key: `MaxLowVol`,
-            // label: `最低电压\n`,
-            label: `最小电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            actionType: `input`,
-            // actionLabelName: `最低电压`,
-            actionLabelName: `最小电压`,
-            actionInputType: `digit`
-        }, {
-            key: `WorkTime`,
-            label: `取电时长\n`,
-            title: `0`,
-            subtitle: `Min`,
-            imgName: `shijian`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `NeedVol`,
-            label: `需求电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `NeedCur`,
-            label: `需求电流\n`,
+            key: `MeasCur`,
+            label: `测量电流\n`,
             title: `0`,
             subtitle: `A`,
             imgName: `dianliu`,
@@ -148,29 +73,9 @@ module.exports = Behavior({
             imgName: `dianya`,
             isReadyOnly: true, // 只读
         }, {
-            key: `MeasCur`,
-            label: `测量电流\n`,
-            title: `0`,
-            subtitle: `A`,
-            imgName: `dianliu`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `MaxTemp`,
-            label: `允许温度\n`,
-            title: `0`,
-            subtitle: `℃`,
-            imgName: `wendu`,
-            isReadyOnly: true, // 只读
-        }, {
             key: `HigTemp`,
-            label: `最高温度\n`,
-            title: `0`,
-            subtitle: `℃`,
-            imgName: `wendu`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `LowTemp`,
-            label: `最低温度\n`,
+            // label: `最高温度\n`,
+            label: `电池温度\n`,
             title: `0`,
             subtitle: `℃`,
             imgName: `wendu`,
@@ -189,10 +94,23 @@ module.exports = Behavior({
             subtitle: `AH`,
             imgName: `rongliang`,
             isReadyOnly: true, // 只读
-        }],
-        settingPopupValue: ``, // 预览数据
-        settingPopupInfo: null, // 弹窗内容
-        settingPopupShow: false, // 弹窗是否展示
+        }, {
+            key: `WorkTime`,
+            label: `取电时长\n`,
+            title: `0`,
+            subtitle: `Min`,
+            imgName: `shijian`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `SoftVer`,
+            label: `软件版本\n`,
+            title: `v1.0`,
+            subtitle: ``,
+            imgName: `daima`,
+            isHideItem: true, // 不展示
+            isReadyOnly: true, // 只读
+            actionLabelName: `软件版本`,
+        }]
     },
 
     methods: {
@@ -219,85 +137,35 @@ module.exports = Behavior({
         },
 
         /**
-         * 设置项隐藏
+         * 点击设置终止放电SOC-加
          */
-        setItemHide: function () {
-            this.setData({
-                settingPopupShow: false,
-            })
-            var timerName = setTimeout(() => {
-                clearTimeout(timerName);
-                this.setData({
-                    settingPopupValue: ``,
-                    settingPopupInfo: null
-                })
-            }, 300);
-        },
-
-        /**
-         * 点击设置项
-         */
-        setItemClick: function (event) {
+        setDevSocAddClick() {
             const {
-                dataset: {
-                    item
+                currentSetDevSoc: {
+                    key,
+                    title
                 }
-            } = event.currentTarget;
-            if (item.isReadyOnly) {
-                // 只读
-                return false;
-            }
-            if (item.actionType === `input`) {
-                // 弹窗展示输入框
-                this.setData({
-                    settingPopupValue: item.title,
-                    settingPopupInfo: item,
-                    settingPopupShow: true
-                })
-                return
-            }
-            if (item.actionType === `picker`) {
-                // 弹窗展示选择器
-                this.setData({
-                    settingPickerInfo: item,
-                    settingPickerShow: true
-                })
-            }
-        },
-
-        /**
-         * 输入内容
-         */
-        valueChange: function (event) {
-            const {
-                dataset: {
-                    name
-                }
-            } = event.currentTarget;
-            let value = event.detail;
-            if (name === `VinCode`) {
-                value = value.replace(/[^\w\/]/ig, '').toUpperCase();
-            }
-            this.setData({
-                settingPopupValue: value
-            })
-        },
-
-        /**
-         * 表单提交
-         */
-        formSubmitClick: function (event) {
-            const valueObj = event.detail.value;
-            let keyStr = ``,
-                valueStr = ``;
-            for (let key in valueObj) {
-                keyStr = key;
-            }
-            valueStr = valueObj[keyStr];
-            let sendData = `${keyStr}:${valueStr}`;
+            } = this.data;
+            const value = title ? (title * 1) : 0;
+            let sendData = `${key}:${value + 1}`;
             this.data.send_data = sendData;
             this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
-            this.setItemHide(); // 关闭弹窗
+        },
+
+        /**
+         * 点击设置终止放电SOC-减
+         */
+        setDevSocReduceClick() {
+            const {
+                currentSetDevSoc: {
+                    key,
+                    title
+                }
+            } = this.data;
+            const value = title ? (title * 1) : 0;
+            let sendData = `${key}:${value - 1}`;
+            this.data.send_data = sendData;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
         },
 
         /**
@@ -337,6 +205,7 @@ module.exports = Behavior({
                 renderObj,
                 __tempData,
                 currentSOC,
+                currentSetDevSoc,
                 renderItems
             } = this.data;
             if (!compareXY(renderObj, __tempData)) {
@@ -353,6 +222,10 @@ module.exports = Behavior({
                 currentSOC: {
                     ...currentSOC,
                     title: renderResult['BatSoc']
+                },
+                currentSetDevSoc: {
+                    ...currentSetDevSoc,
+                    title: renderResult['SetDevSoc']
                 },
                 renderItems: resultItems
             })

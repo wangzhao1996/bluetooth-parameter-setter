@@ -38,18 +38,18 @@ export const handleDevicePath = (deviceId, deviceName) => {
  */
 export const handleRSSI = RSSI => {
     if (RSSI > -40) {
-        return `/imgs/scan/5.png`;
+        return `/imgs/svg/5.svg`;
     }
     if (RSSI > -50) {
-        return `/imgs/scan/4.png`;
+        return `/imgs/svg/4.svg`;
     }
     if (RSSI > -60) {
-        return `/imgs/scan/3.png`;
+        return `/imgs/svg/3.svg`;
     }
     if (RSSI > -70) {
-        return `/imgs/scan/2.png`;
+        return `/imgs/svg/2.svg`;
     }
-    return `/imgs/scan/1.png`;
+    return `/imgs/svg/1.svg`;
 }
 /**
  * 判断对象x，和对象y是否相等；

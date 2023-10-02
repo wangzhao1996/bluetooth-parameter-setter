@@ -13,8 +13,7 @@ Page({
         pageNodata: false, // 页面无数据
     },
 
-    onLoad: function () {
-    },
+    onLoad: function () {},
 
     onReady: function () {
         wx.onBluetoothDeviceFound((devices) => {
@@ -75,6 +74,12 @@ Page({
         this.onReLoad();
     },
 
+    onShareAppMessage: function () {
+        return {
+            path: `/pages/index/index`
+        }
+    },
+
     /**
      * 点击重试
      */
@@ -82,8 +87,16 @@ Page({
         this.setData({
             pageNodata: false,
         }, async () => {
-            await this.searchStop(); // 先停止搜索
-            await this.closeBluetooth(); // 关闭蓝牙模块
+            try {
+                await this.searchStop(); // 先停止搜索
+            } catch (error) {
+                console.error(error);
+            }
+            try {
+                await this.closeBluetooth(); // 关闭蓝牙模块
+            } catch (error) {
+                console.error(error);
+            }
             var timer = setTimeout(() => {
                 if (!this.data.deviceList.length) {
                     this.showLoading(); // 展示 loading
@@ -99,9 +112,6 @@ Page({
      */
     showLoading: function () {
         this.__showLoading = true;
-        wx.showLoading({
-            title: `请稍后…`
-        })
         this.__loadTimer = setTimeout(() => {
             if (this.__showLoading) {
                 this.hideLoading(); // 去掉 loading
@@ -118,7 +128,6 @@ Page({
      */
     hideLoading: function () {
         this.__showLoading = false;
-        wx.hideLoading();
     },
 
     /**
@@ -127,7 +136,7 @@ Page({
     searchStop: function () {
         return new Promise((resolve) => {
             wx.stopBluetoothDevicesDiscovery({
-                success: function (res) {
+                success: (res) => {
                     // console.log('停止搜寻附近的蓝牙外围设备', res);
                     // wxLog.info(JSON.stringify({
                     //     page: `home`,
@@ -135,6 +144,10 @@ Page({
                     //     devices: res
                     // }));
                     resolve(true);
+                },
+                fail: (err) => {
+                    console.error(err);
+                    resolve(false);
                 }
             })
         })
@@ -148,6 +161,9 @@ Page({
         console.log('蓝牙初始化成功？', result);
         if (!result) {
             this.hideLoading();
+            this.setData({
+                pageNodata: true
+            })
         }
         if (result) {
             wx.startBluetoothDevicesDiscovery({
@@ -185,9 +201,16 @@ Page({
                     resolve(true);
                 },
                 fail: (err) => {
-                    console.log(`初始化蓝牙模块x`, err);
+                    console.log(`😭初始化蓝牙模块`);
+                    console.error(err);
+                    if (err.errMsg === `openBluetoothAdapter:fail already opened`) {
+                        // https://developers.weixin.qq.com/community/develop/doc/0006640d92cde050a6ef2e81a56400?highLine=openBluetoothAdapter%253Afail%2520already%2520opened
+                        // 当成 success 继续
+                        resolve(true);
+                        return
+                    }
                     if (err.errno === 103 || err.errMsg === `openBluetoothAdapter:fail auth deny`) {
-                        console.log(`初始化蓝牙模块x1`);
+                        console.log(`😭初始化蓝牙模块103`);
                         // 身份验证失败，应当跳转至授权管理页
                         this.setData({
                             settingButtonShow: true

@@ -1,21 +1,27 @@
-<van-button wx:if="{{ settingButtonShow }}" type="default" size="large" open-type="openSetting">跳转到设置页打开蓝牙授权</van-button>
-<view class="section">
-    <view class="title">附近低功耗蓝牙设备</view>
+<view class="page">
+    <mp-navigation-bar back="{{ false }}" color="#fefefe" title="附近的设备" loading="{{ !pageNodata && !deviceList.length }}" />
+    <view wx:if="{{ settingButtonShow }}" class="page-nodata weui-flex">
+        <mp-icon icon="error" color="#ffffff" size="100" />
+        <button class="button button--mini button--mini--mt" plain="{{ true }}" type="mini" open-type="openSetting">允许蓝牙授权</button>
+    </view>
+    <view wx:elif="{{ pageNodata && !deviceList.length }}" class="page-nodata weui-flex">
+        <mp-icon icon="error" color="#ffffff" size="100" />
+        <button class="button button--mini button--mini--mt" plain="{{ true }}" type="mini" bindtap="onReLoad">重新获取</button>
+    </view>
+    <navigator wx:for="{{ deviceList }}" wx:key="deviceId" class="dev" url="{{ item.jumpUrl }}">
+        <view class="dev__info">
+            <view class="dev__info__name text__line1">
+                {{item.name}}
+            </view>
+            <view class="dev__info__subname text__line1">
+                rssi: {{item.rssi}}
+            </view>
+            <view class="dev__info__subname text__line1">
+                deviceId: {{item.deviceId}}
+            </view>
+        </view>
+        <view class="dev__rssi" style="vertical-align:middle">
+            <image class="dev__rssi__image" src="{{item.img}}" />
+        </view>
+    </navigator>
 </view>
-<van-empty wx:if="{{ pageNodata && !deviceList.length }}" description="可以下拉刷新，可以点击按钮刷新！">
-    <van-button round type="primary" class="refresh-button" bind:click="onReLoad">点击刷新</van-button>
-</van-empty>
-<navigator wx:for="{{ deviceList }}" wx:key="deviceId" class="dev" url="{{ item.jumpUrl }}">
-    <view class="dev__info">
-        <view class="dev__info__name text__line1">
-            {{item.name}}
-        </view>
-        <view class="dev__info__deviceId text__line1">
-            deviceId: {{item.deviceId}}
-        </view>
-    </view>
-    <view class="dev__rssi" style="vertical-align:middle">
-        <image class="dev__rssi__image" src="{{item.img}}" />
-        <view class="dev__rssi__number">{{item.rssi}}</view>
-    </view>
-</navigator>

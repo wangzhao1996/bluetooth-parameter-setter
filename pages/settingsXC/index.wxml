@@ -1,63 +1,68 @@
 <!--page/settings/index.wxml-->
-<view class="PageWarpper">
-    <view class="PageItem">
-        <van-row>
-            <van-col offset="8" span="8" data-item="{{ currentSOC }}" bindtap="setItemClick">
-                <van-circle layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="{{ gradientColor }}" value="{{ renderObj.BatSoc }}" text="{{ renderObj.BatSoc }}%" />
-            </van-col>
-        </van-row>
-        <van-row>
-            <van-col offset="8" span="8" custom-class="TextCenter">{{ renderObj.NowStatus * 1 ? '正在放电' : '' }}</van-col>
-        </van-row>
+<view class="page">
+    <view style="height: 0; padding-top: 60px;">
+        <mp-navigation-bar color="#fefefe" title="{{ navTitle }}" />
     </view>
-    <view class="PageItem">
-        <van-cell-group>
+    <view class="circle-wrapper">
+        <wz-circle value="{{ currentSOC.title * 1 }}">
+            <view class="weui-flex circle-info">
+                <image class="lightning" src="../../imgs/icon/lightning.svg" />
+                <view class="circle-title">{{ currentSOC.title }}%</view>
+                <view class="circle-subtitle">{{ currentSOC.label }}</view>
+            </view>
+        </wz-circle>
+        <view class="info-position">
             <block wx:for="{{ renderItems }}" wx:key="index">
-                <!-- 运行代码、软件版本 -->
-                <block wx:if="{{ item.key === 'RunCode' || item.key === 'SoftVer' }}">
-                    <van-field label="{{ item.actionLabelName }}" value="{{ item.actionList[item.title * 1] || item.title }}" label-class="rendervin__color" input-class="rendervin__color" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}">
-                        <van-button wx:if="{{ !item.isReadyOnly }}" slot="button" size="small" type="primary" data-item="{{ item }}" bind:click="setItemClick">{{ renderObj.BattType ? '更新' : '设置' }}{{ item.actionLabelName }}</van-button>
-                    </van-field>
-                </block>
+                <view wx:if="{{ item.key === 'SoftVer' }}">
+                    {{ item.label }}: {{ item.title }}
+                </view>
+                <view wx:if="{{ item.key === 'MaxBattAH' }}">
+                    {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
+                </view>
+                <view wx:if="{{ item.key === 'SingleV' }}">
+                    {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
+                </view>
             </block>
-        </van-cell-group>
-        <van-grid column-num="{{ 5 }}">
-            <block wx:for="{{ renderItems }}" wx:key="index">
-                <block wx:if="{{ !item.isHideItem }}">
-                    <van-grid-item content-class="TextCenter" icon="/imgs/icon/{{ item.imgName }}.png" text="{{ item.label }}" subtext="{{ item.title }}{{ item.subtitle }}" data-item="{{ item }}" bindtap="setItemClick" />
-                </block>
-            </block>
-        </van-grid>
+        </view>
+    </view>
+    <view class="info-items weui-flex">
+        <block wx:for="{{ renderItems }}" wx:key="index">
+            <view wx:if="{{ item.key === 'MeasCur' }}" class="info-item weui-flex">
+                <view class="info-item-value">{{ item.title }}{{ item.subtitle || '' }}</view>
+                <view class="info-item-label">{{ item.label }}</view>
+            </view>
+            <view wx:if="{{ item.key === 'MeasVol' }}" class="info-item weui-flex">
+                <view class="info-item-value">{{ item.title }}{{ item.subtitle || '' }}</view>
+                <view class="info-item-label">{{ item.label }}</view>
+            </view>
+        </block>
+    </view>
+    <view class="info-seting">
+        <view class="info-seting-title">其他信息</view>
+        <block wx:for="{{ renderItems }}" wx:key="index">
+            <view wx:if="{{ item.key === 'HigTemp' || item.key === 'WorkTime' }}" class="info-setting-item weui-flex">
+                <view class="info-setting-label">{{ item.label }}</view>
+                <view class="info-setting-actions weui-flex">
+                    <view class="info-setting-action-value">{{ item.title || '' }}{{ item.subtitle || '' }}</view>
+                </view>
+            </view>
+        </block>
+    </view>
+    <view class="info-seting">
+        <view class="info-seting-title">需求设置</view>
+        <view class="info-setting-item weui-flex">
+            <view class="info-setting-label">{{ currentSetDevSoc.actionLabelName }}</view>
+            <view class="info-setting-actions weui-flex">
+                <image class="info-setting-action-icon" src="../../imgs/icon/reduce.svg" bindtap="setDevSocReduceClick" />
+                <view class="info-setting-action-value">{{ currentSetDevSoc.title || '0%' }}</view>
+                <image class="info-setting-action-icon" src="../../imgs/icon/add.svg" bindtap="setDevSocAddClick" />
+            </view>
+        </view>
     </view>
     <view class="PageWarpperBottom">
-        <view class="PageItem PageBottom">
-            <van-row>
-                <van-col offset="2" span="20">
-                    <van-button wx:if="{{ renderObj.NowStatus * 1 }}" type="danger" size="large" bind:click="settingEndClick">停止放电</van-button>
-                    <van-button wx:else type="primary" size="large" bind:click="settingStartClick">开始放电</van-button>
-                </van-col>
-            </van-row>
-        </view>
-        <view class="PageItem PageBottom">
-            <van-row>
-                <van-col offset="2" span="20">
-                    <van-button type="primary" size="large"  data-item="{{ currentSetDevSoc }}" bind:click="setItemClick">{{ currentSetDevSoc.label }}</van-button>
-                </van-col>
-            </van-row>
+        <view class="PageWarpperBottom PageWarpperBottomFixed">
+            <button wx:if="{{ renderObj.NowStatus * 1 }}" class="button button--large button-end" bindtap="settingEndClick">停止放电</button>
+            <button wx:else class="button button--large button-start" bindtap="settingStartClick">开始放电</button>
         </view>
     </view>
 </view>
-<!-- 设置项目 -->
-<van-popup show="{{ settingPopupShow }}" round="{{ true }}" z-index="1000" custom-style="width: 90%;" bind:close="setItemHide">
-    <view class="setting-popup">
-        <view class="setting-popup__title">设置【{{ settingPopupInfo.actionLabelName }}】</view>
-        <view class="setting-popup__preview">{{ settingPopupValue }}</view>
-        <form bindsubmit="formSubmitClick">
-            <view class="setting-popup__inputbox border-box">
-                <van-field wx:if="{{ settingPopupShow }}" name="{{ settingPopupInfo.key }}" type="{{ settingPopupInfo.actionInputType }}" value="{{ settingPopupValue }}" data-name="{{ settingPopupInfo.key }}" bind:change="valueChange" maxlength="{{ 17 }}" center="{{ true }}" clearable="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}" placeholder="请输入">
-                    <van-button slot="button" size="small" type="primary" form-type="submit">设置</van-button>
-                </van-field>
-            </view>
-        </form>
-    </view>
-</van-popup>

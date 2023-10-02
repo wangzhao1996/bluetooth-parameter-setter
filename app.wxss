@@ -3,27 +3,37 @@ page {
     color: #333333;
 }
 
+.page {
+    min-height: 100vh;
+    background: #31D9AC;
+}
+
+.button {
+    padding: 0 !important;
+    border: 0 !important;
+    background-color: #fefefe !important;
+    box-shadow: 0rpx 20rpx 40rpx 7rpx rgba(0, 0, 0, 0.11);
+    border-radius: 16rpx;
+    color: #333333;
+}
+
+.button--large {
+    width: 480rpx;
+    height: 96rpx;
+    font-size: 32rpx;
+    line-height: 96rpx;
+}
+
+.button--mini {
+    width: 240rpx;
+    height: 72rpx;
+    line-height: 72rpx;
+    font-size: 28rpx;
+}
+
 .border-box {
     box-sizing: border-box;
 }
-
-/* vant css start */
-
-.van-circle__text {
-    font-size: 64rpx;
-    font-weight: bold;
-}
-
-.van-grid-item__text .subtext {
-    font-size: 36rpx;
-    color: #07c160;
-}
-
-.van-grid-item__content {
-    padding: 12rpx 6rpx !important;
-}
-
-/* vant css end */
 
 .text__line1 {
     white-space: nowrap;
@@ -31,29 +41,15 @@ page {
     text-overflow: ellipsis;
 }
 
-.RefreshButton {
-    width: 160rpx;
-    height: 40rpx;
-}
-
 .PageWarpper {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-height: 100vh;
-    padding-top: 32rpx;
     box-sizing: border-box;
 }
 
 .PageWarpperBottom {
     padding-top: 20rpx;
     padding-bottom: 45px;
-}
-
-.PageItem+.PageItem {
-    margin-top: 20rpx;
-}
-
-.TextCenter {
-    text-align: center;
 }

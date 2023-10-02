@@ -1,16 +1,18 @@
 {
     "pages": [
         "pages/index/index",
-        "pages/test/index",
-        "pages/settingsXC/index",
-        "pages/settingsBMS/index"
+        "pages/settingsXC/index"
     ],
     "window": {
-        "navigationBarBackgroundColor": "#0090ff",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationStyle": "custom",
         "navigationBarTextStyle": "white",
         "backgroundColor": "#efefef",
         "backgroundTextStyle": "dark",
         "navigationBarTitleText": "蓝牙设备"
+    },
+    "useExtendedLib": {
+        "weui": true
     },
     "lazyCodeLoading": "requiredComponents"
 }

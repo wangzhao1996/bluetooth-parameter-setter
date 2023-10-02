@@ -1,16 +1,20 @@
-.section,
-.dev {
-    padding: 20rpx;
-    margin-bottom: 15rpx;
-    background: #ffffff;
-    border-bottom: 1rpx solid #dedede;
+.page-nodata {
+    height: 60vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.title {
-    position: relative;
-    text-align: center;
-    font-weight: bold;
-    line-height: 2;
+.button--mini--mt {
+    margin-top: 48rpx;
+}
+
+.dev {
+    padding: 32rpx;
+    margin: 32rpx;
+    background: #ffffff;
+    border-radius: 16rpx;
+    box-shadow: 2rpx 2rpx 12rpx 2rpx rgba(238, 242, 244, 1);
 }
 
 .dev {
@@ -26,23 +30,23 @@
     overflow: hidden;
 }
 
-.dev__info__deviceId {
+.dev__info__name {
+    font-size: 32rpx;
+    font-weight: bold;
+    line-height: 64rpx;
+}
+
+.dev__info__subname {
     padding-top: 8rpx;
-    font-size: 28rpx;
+    font-size: 24rpx;
 }
 
 .dev__rssi {
     flex-shrink: 0;
-    font-size: 26rpx;
-    padding-right: 12rpx;
 }
 
 .dev__rssi__image {
     display: block;
-    width: 50rpx;
-    height: 50rpx;
-}
-
-.dev__rssi__number {
-    font-size: 24rpx;
+    width: 64rpx;
+    height: 64rpx;
 }
