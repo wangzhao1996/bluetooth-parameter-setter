@@ -1,7 +1,9 @@
 <!--page/settings/index.wxml-->
 <view class="page">
     <view style="height: 0; padding-top: 60px;">
-        <mp-navigation-bar color="#fefefe" title="{{ navTitle }}" />
+        <mp-navigation-bar back="{{ flase }}" color="#fefefe" title="{{ navTitle }}">
+            <view slot="left" class="nav-icon"></view>
+        </mp-navigation-bar>
     </view>
     <view class="circle-wrapper">
         <wz-circle value="{{ currentSOC.title * 1 }}">

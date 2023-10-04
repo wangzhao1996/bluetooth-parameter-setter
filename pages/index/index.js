@@ -1,7 +1,8 @@
 import {
     checkIsLegalDevice,
     handleDevicePath,
-    handleRSSI
+    handleRSSI,
+    handleRSSINumber
 } from "../../utils/index";
 var app = getApp();
 Page({
@@ -11,9 +12,11 @@ Page({
         settingButtonShow: false, // 展示跳转授权页按钮
         deviceList: [], // 设备列表
         pageNodata: false, // 页面无数据
+        loadingSvgIcon: ``,
     },
 
-    onLoad: function () {},
+    onLoad: function () {
+    },
 
     onReady: function () {
         wx.onBluetoothDeviceFound((devices) => {
@@ -37,6 +40,7 @@ Page({
                             deviceId: e.deviceId,
                             rssi: e.RSSI,
                             name: e.name,
+                            num: handleRSSINumber(e.RSSI),
                             img: handleRSSI(e.RSSI),
                             jumpUrl: handleDevicePath(e.deviceId, e.name)
                         }
@@ -66,6 +70,10 @@ Page({
 
     onUnload: function () {
         this.searchStop(); // 停止搜索设备
+        if (this.__loadSvgTimer) {
+            clearTimeout(this.__loadSvgTimer);
+            this.__loadSvgTimer = 0;
+        }
     },
 
     onPullDownRefresh: function () {
@@ -107,10 +115,27 @@ Page({
         })
     },
 
+    loadSvgIcon(num = 0) {
+        if (this.__loadSvgTimer) {
+            clearTimeout(this.__loadSvgTimer);
+            this.__loadSvgTimer = 0;
+        }
+        this.setData({
+            loadingSvgIcon: `../../imgs/snapshoot/bluetooth${num}.svg`
+        })
+        this.__loadSvgTimer = setTimeout(() => {
+            clearTimeout(this.__loadSvgTimer);
+            this.__loadSvgTimer = 0;
+            const nextNum = num + 1;
+            this.loadSvgIcon(nextNum > 2 ? 0 : nextNum);
+        }, 500);
+    },
+
     /**
      * 展示 loading 状态
      */
     showLoading: function () {
+        this.loadSvgIcon();
         this.__showLoading = true;
         this.__loadTimer = setTimeout(() => {
             if (this.__showLoading) {
@@ -127,6 +152,10 @@ Page({
      * 关闭 loading 弹窗
      */
     hideLoading: function () {
+        if (this.__loadSvgTimer) {
+            clearTimeout(this.__loadSvgTimer);
+            this.__loadSvgTimer = 0;
+        }
         this.__showLoading = false;
     },
 

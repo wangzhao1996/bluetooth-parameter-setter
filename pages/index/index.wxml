@@ -1,27 +1,41 @@
 <view class="page">
     <mp-navigation-bar back="{{ false }}" color="#fefefe" title="附近的设备" loading="{{ !pageNodata && !deviceList.length }}" />
-    <view wx:if="{{ settingButtonShow }}" class="page-nodata weui-flex">
-        <mp-icon icon="error" color="#ffffff" size="100" />
-        <button class="button button--mini button--mini--mt" plain="{{ true }}" type="mini" open-type="openSetting">允许蓝牙授权</button>
-    </view>
-    <view wx:elif="{{ pageNodata && !deviceList.length }}" class="page-nodata weui-flex">
-        <mp-icon icon="error" color="#ffffff" size="100" />
-        <button class="button button--mini button--mini--mt" plain="{{ true }}" type="mini" bindtap="onReLoad">重新获取</button>
-    </view>
-    <navigator wx:for="{{ deviceList }}" wx:key="deviceId" class="dev" url="{{ item.jumpUrl }}">
-        <view class="dev__info">
-            <view class="dev__info__name text__line1">
-                {{item.name}}
-            </view>
-            <view class="dev__info__subname text__line1">
-                rssi: {{item.rssi}}
-            </view>
-            <view class="dev__info__subname text__line1">
-                deviceId: {{item.deviceId}}
-            </view>
+    <block wx:if="{{ !deviceList.length }}">
+        <!-- 提示授权蓝牙 -->
+        <view wx:if="{{ settingButtonShow }}" class="page-content">
+            <image class="page-nodata-icon" src="../../imgs/snapshoot/bluetooth.svg" />
+            <button class="button button--mini button--mini--mt" plain="{{ true }}" type="mini" open-type="openSetting">允许蓝牙授权</button>
         </view>
-        <view class="dev__rssi" style="vertical-align:middle">
-            <image class="dev__rssi__image" src="{{item.img}}" />
+        <!-- 确认无数据，点击重新获取 -->
+        <view wx:elif="{{ pageNodata && !deviceList.length }}" class="page-content">
+            <image class="page-nodata-icon" src="../../imgs/snapshoot/bluetooth.svg" />
+            <button class="button button--mini button--mini--mt" plain="{{ true }}" type="mini" bindtap="onReLoad">重新获取</button>
         </view>
-    </navigator>
+        <!-- loading状态 -->
+        <view wx:elif="{{ !pageNodata }}" class="page-content">
+            <image class="page-nodata-icon" src="{{ loadingSvgIcon }}" />
+            <button class="button button--mini button--mini--nobg button--mini--mt" plain="{{ true }}" type="mini" bindtap="onReLoad">附近的设备</button>
+        </view>
+    </block>
+    <view wx:if="{{ deviceList.length }}" class="page-content">
+        <scroll-view class="page-scroll" scroll-y="{{true}}" scroll-with-animation="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+            <navigator wx:for="{{ deviceList }}" wx:key="deviceId" class="dev" hover-class="dev--hover" url="{{ item.jumpUrl }}">
+                <view class="dev__info">
+                    <view class="dev__info__name text__line1">
+                        {{item.name}}
+                    </view>
+                    <view class="dev__info__subname text__line1">
+                        deviceId: {{item.deviceId}}
+                    </view>
+                    <view class="dev__info__subname text__line1">
+                        rssi: {{item.rssi || 0}}
+                    </view>
+                </view>
+                <view class="liner-items">
+                    <view wx:for="{{[0, 1, 2, 3, 4]}}" wx:for-item="ele" wx:for-index="idx" wx:key="idx" class="liner-item {{ idx < item.num ? 'liner-item-show' : '' }}"></view>
+                </view>
+            </navigator>
+            <view style="height: 45rpx;"></view>
+        </scroll-view>
+    </view>
 </view>

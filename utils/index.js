@@ -51,6 +51,27 @@ export const handleRSSI = RSSI => {
     }
     return `/imgs/svg/1.svg`;
 }
+
+/**
+ * 通过 RSSI 返回对应信号图像
+ * @param {number} RSSI 信号强度
+ * @returns {string}
+ */
+export const handleRSSINumber = RSSI => {
+    if (RSSI > -40) {
+        return 5;
+    }
+    if (RSSI > -50) {
+        return 4;
+    }
+    if (RSSI > -60) {
+        return 3;
+    }
+    if (RSSI > -70) {
+        return 2;
+    }
+    return 1;
+}
 /**
  * 判断对象x，和对象y是否相等；
  * @param x
