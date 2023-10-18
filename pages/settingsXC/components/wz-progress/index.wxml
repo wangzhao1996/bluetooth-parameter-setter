@@ -1,0 +1,4 @@
+<!--components/wz-circle/index.wxml-->
+<view class="circle {{ !value ? 'circle_background_img' : (value === 100) ? 'circle_100_background_img' : 'circle_99_background_img' }}">
+    <slot></slot>
+</view>

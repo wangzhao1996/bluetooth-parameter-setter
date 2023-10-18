@@ -1,56 +1,81 @@
 <!--page/settings/index.wxml-->
-<view class="page">
-    <view style="height: 0; padding-top: 60px;">
+<view class="page page_background_img">
+    <view style="height: 0; padding-top: 204rpx;">
         <mp-navigation-bar back="{{ flase }}" color="#fefefe" title="{{ navTitle }}">
-            <view slot="left" class="nav-icon"></view>
+            <view slot="left" class="nav-icon back_background_img" bindtap="backClick"></view>
         </mp-navigation-bar>
     </view>
     <view class="circle-wrapper">
-        <wz-circle value="{{ currentSOC.title * 1 }}">
-            <view class="weui-flex circle-info">
-                <image class="lightning" src="../../imgs/icon/lightning.svg" />
-                <view class="circle-title">{{ currentSOC.title }}%</view>
-                <view class="circle-subtitle">{{ currentSOC.label }}</view>
-            </view>
-        </wz-circle>
-        <view class="info-position">
-            <block wx:for="{{ renderItems }}" wx:key="index">
-                <view wx:if="{{ item.key === 'SoftVer' }}">
-                    {{ item.label }}: {{ item.title }}
+        <view class="weui-flex circle-info">
+            <wz-progress value="{{ currentSOC.title * 1 }}">
+                <view class="progress weui-flex">
+                    <image class="progress-icon" src="../../imgs/icon/vector.png" />
+                    <view class="progress-number">{{ currentSOC.title }}<text class="unit">%</text></view>
                 </view>
-                <view wx:if="{{ item.key === 'MaxBattAH' }}">
-                    {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
-                </view>
-                <view wx:if="{{ item.key === 'SingleV' }}">
-                    {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
-                </view>
-            </block>
+            </wz-progress>
         </view>
     </view>
     <view class="info-items weui-flex">
         <block wx:for="{{ renderItems }}" wx:key="index">
-            <view wx:if="{{ item.key === 'MeasCur' }}" class="info-item weui-flex">
-                <view class="info-item-value">{{ item.title }}{{ item.subtitle || '' }}</view>
+            <!-- 测量电流 -->
+            <view wx:if="{{ item.key === 'MeasCur' }}" class="info-item weui-flex banner_a_background_img">
                 <view class="info-item-label">{{ item.label }}</view>
+                <view class="info-item-value">{{ item.title }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
-            <view wx:if="{{ item.key === 'MeasVol' }}" class="info-item weui-flex">
-                <view class="info-item-value">{{ item.title }}{{ item.subtitle || '' }}</view>
+            <!-- 测量电压 -->
+            <view wx:if="{{ item.key === 'MeasVol' }}" class="info-item weui-flex banner_v_background_img">
                 <view class="info-item-label">{{ item.label }}</view>
+                <view class="info-item-value">{{ item.title }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
         </block>
     </view>
-    <view class="info-seting">
-        <view class="info-seting-title">其他信息</view>
+    <view class="info-seting weui-flex">
         <block wx:for="{{ renderItems }}" wx:key="index">
-            <view wx:if="{{ item.key === 'HigTemp' || item.key === 'WorkTime' }}" class="info-setting-item weui-flex">
+            <!-- 电池温度 -->
+            <view wx:if="{{ item.key === 'HigTemp' }}" class="info-setting-item weui-flex card_w_background_img">
                 <view class="info-setting-label">{{ item.label }}</view>
-                <view class="info-setting-actions weui-flex">
-                    <view class="info-setting-action-value">{{ item.title || '' }}{{ item.subtitle || '' }}</view>
-                </view>
+                <view class="info-setting-value">{{ item.title || '0' }}<text class="unit">{{ item.subtitle || '' }}</text></view>
+            </view>
+            <!-- 取电时长 -->
+            <view wx:if="{{ item.key === 'WorkTime' }}" class="info-setting-item weui-flex card_t_background_img">
+                <view class="info-setting-label">{{ item.label }}</view>
+                <view class="info-setting-value">{{ item.title || '0' }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
         </block>
+        <!-- 终止放电SOC -->
+        <view class="info-setting-item weui-flex card_background_img">
+            <view class="info-setting-label">{{ currentSetDevSoc.actionLabelName }}</view>
+            <view class="info-setting-value">{{ currentSetDevSoc.title || '0' }}<text class="unit">%</text></view>
+            <view class="info-setting-btn weui-flex">
+                <image class="info-setting-button" src="../../imgs/icon/set_reduce.png" bindtap="setDevSocReduceClick" />
+                <image class="info-setting-button" src="../../imgs/icon/set_add.png" bindtap="setDevSocAddClick" />
+            </view>
+        </view>
     </view>
-    <view class="info-seting">
+    <!-- 开关 -->
+    <view class="button-setting weui-flex">
+        <view wx:if="{{ renderObj.NowStatus * 1 }}" class="button-class button_e_background_img" bindtap="settingEndClick"><text style="opacity: 0;">停止放电</text></view>
+        <view wx:else class="button-class button_s_background_img" bindtap="settingStartClick"><text style="opacity: 0;">开始放电</text></view>
+    </view>
+    <view class="info-position">
+        <view class="info-position-fixed weui-flex">
+            <block wx:for="{{ renderItems }}" wx:key="index">
+                <!-- 单体电压 -->
+                <view wx:if="{{ item.key === 'SingleV' }}" class="info-position-item weui-flex">
+                    {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
+                </view>
+                <!-- 电池容量 -->
+                <view wx:if="{{ item.key === 'MaxBattAH' }}" class="info-position-item weui-flex">
+                    {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
+                </view>
+                <!-- 软件版本 -->
+                <view wx:if="{{ item.key === 'SoftVer' }}" class="info-position-item weui-flex">
+                    {{ item.label }}: {{ item.title }}
+                </view>
+            </block>
+        </view>
+    </view>
+    <!-- <view class="info-seting">
         <view class="info-seting-title">需求设置</view>
         <view class="info-setting-item weui-flex">
             <view class="info-setting-label">{{ currentSetDevSoc.actionLabelName }}</view>
@@ -60,11 +85,5 @@
                 <image class="info-setting-action-icon" src="../../imgs/icon/add.svg" bindtap="setDevSocAddClick" />
             </view>
         </view>
-    </view>
-    <view class="PageWarpperBottom">
-        <view class="PageWarpperBottom PageWarpperBottomFixed">
-            <button wx:if="{{ renderObj.NowStatus * 1 }}" class="button button--large button-end" bindtap="settingEndClick">停止放电</button>
-            <button wx:else class="button button--large button-start" bindtap="settingStartClick">开始放电</button>
-        </view>
-    </view>
+    </view> -->
 </view>

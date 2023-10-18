@@ -115,27 +115,10 @@ Page({
         })
     },
 
-    loadSvgIcon(num = 0) {
-        if (this.__loadSvgTimer) {
-            clearTimeout(this.__loadSvgTimer);
-            this.__loadSvgTimer = 0;
-        }
-        this.setData({
-            loadingSvgIcon: `../../imgs/snapshoot/bluetooth${num}.svg`
-        })
-        this.__loadSvgTimer = setTimeout(() => {
-            clearTimeout(this.__loadSvgTimer);
-            this.__loadSvgTimer = 0;
-            const nextNum = num + 1;
-            this.loadSvgIcon(nextNum > 2 ? 0 : nextNum);
-        }, 500);
-    },
-
     /**
      * 展示 loading 状态
      */
     showLoading: function () {
-        this.loadSvgIcon();
         this.__showLoading = true;
         this.__loadTimer = setTimeout(() => {
             if (this.__showLoading) {

@@ -1,8 +1,20 @@
 {
     "pages": [
-        "pages/index/index",
-        "pages/settingsXC/index"
+        "pages/index/index"
     ],
+    "subpackages": [{
+        "root": "pages/settingsXC",
+        "name": "detail",
+        "pages": [
+            "index"
+        ]
+    }],
+    "preloadRule": {
+        "pages/index/index": {
+            "network": "all",
+            "packages": ["detail"]
+        }
+    },
     "window": {
         "navigationBarBackgroundColor": "#ffffff",
         "navigationStyle": "custom",

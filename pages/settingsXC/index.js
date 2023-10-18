@@ -27,9 +27,7 @@ Page({
         this.onUnloadClick();
     },
 
-    onShareAppMessage: function () {
-        return {
-            path: `/pages/index/index`
-        }
+    backClick: function() {
+        wx.navigateBack();
     }
 });

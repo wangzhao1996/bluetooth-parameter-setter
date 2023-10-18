@@ -1,9 +1,9 @@
 {
     "navigationBarTextStyle": "white",
-    "backgroundColorTop": "#31D9AC",
-    "backgroundColorBottom": "#FFFFFF",
+    "backgroundColorTop": "#02060C",
+    "backgroundColorBottom": "#02060C",
     "usingComponents": {
         "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
-        "wz-circle": "/components/wz-circle/index"
+        "wz-progress": "./components/wz-progress/index"
     }
 }

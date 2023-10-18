@@ -1,4 +1,6 @@
-.page {
+@import "../../fonts/stylesheet.wxss";
+
+.pageFlexColumn {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -20,6 +22,12 @@
     overflow: hidden;
 }
 
+.page-loading-icon {
+    display: block;
+    width: 140rpx;
+    height: 140rpx;
+}
+
 .page-nodata-icon {
     display: block;
     width: 280rpx;
@@ -33,19 +41,57 @@
 .button--mini--nobg {
     background: transparent !important;
 }
+.button--mini--nobg::before {
+    content: '';
+    background: transparent !important;
+}
+.button--mini--nobg::after {
+    box-shadow: none;
+}
 
 .button--mini--mt {
     margin-top: 48rpx;
 }
+
+
+/* 卡片样式 */
 
 .dev {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 32rpx;
-    margin: 32rpx 48rpx;
-    background-image: linear-gradient(-39deg, #2F353A 0%, #1C1F22 99%);
-    border-radius: 32rpx;
+    margin: 32rpx auto;
+    width: 664rpx;
+    box-sizing: border-box;
+    border-radius: 12px;
+    position: relative;
+    background: linear-gradient(135deg, #39A3D4, #337BBB30, #337BBB30, #39A3D4);
+    overflow: hidden;
+    font-family: 'DingTalk';
+}
+
+.dev::before {
+    content: "";
+    position: absolute;
+    top: 4rpx;
+    left: 4rpx;
+    right: 4rpx;
+    bottom: 4rpx;
+    background-color: #0F1D31;
+    border-radius: 20rpx;
+}
+
+.dev::after {
+    content: "";
+    position: absolute;
+    top: -400px;
+    left: 50%;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 500px 10px #228FED;
 }
 
 .dev--hover {
@@ -53,6 +99,8 @@
 }
 
 .dev__info {
+    position: relative;
+    z-index: 100;
     flex: 1;
     padding-left: 12rpx;
     margin-right: 16rpx;
@@ -81,6 +129,8 @@
 }
 
 .liner-items {
+    position: relative;
+    z-index: 100;
     margin-top: 24rpx;
     display: flex;
     align-items: center;
@@ -97,5 +147,5 @@
 }
 
 .liner-item-show {
-    background-color: #95F0A6;
+    background-color: #92FCE6;
 }

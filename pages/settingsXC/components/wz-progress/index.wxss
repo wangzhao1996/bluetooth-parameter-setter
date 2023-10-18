@@ -1,0 +1,8 @@
+/* components/wz-circle/index.wxss */
+@import "../../styles/css_img_circle.wxss";
+
+.circle {
+    position: relative;
+    width: 158rpx;
+    height: 358rpx;
+}
