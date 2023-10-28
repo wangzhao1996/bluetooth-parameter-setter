@@ -4,3 +4,14 @@
 page {
     background: linear-gradient(#e8ebe3, #dfe5dd);
 }
+
+.PageWarpperUpgrade .PageItem {
+    flex-shrink: 0;
+}
+
+.PageWarpperUpgrade .PageWarpperBottom {
+    flex: 1;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}

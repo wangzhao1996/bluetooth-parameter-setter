@@ -1,4 +1,6 @@
+
 page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
     font-size: 32rpx;
     color: #333333;
 }
@@ -36,22 +38,46 @@ page {
     height: 40rpx;
 }
 
+.PageNavBarItems {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.PageNavBarItem {
+    display: flex;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+}
+
+.Page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
 .PageWarpper {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 100vh;
+    flex: 1;
+    height: 100%;
     padding-top: 32rpx;
     box-sizing: border-box;
 }
 
 .PageWarpperBottom {
+    margin-top: auto;
     padding-top: 20rpx;
     padding-bottom: 45px;
 }
 
 .PageItem+.PageItem {
     margin-top: 20rpx;
+}
+
+.PageTextArea {
+    line-height: 1.2 !important;
 }
 
 .TextCenter {
