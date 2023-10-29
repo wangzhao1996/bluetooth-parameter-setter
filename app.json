@@ -5,10 +5,6 @@
         "pages/settingsXC/index",
         "pages/settingsBMS/index"
     ],
-    "usingComponents": {
-        "van-dialog": "@vant/weapp/dialog/index",
-        "van-notify": "@vant/weapp/notify/index"
-    },
     "window": {
         "navigationBarBackgroundColor": "#0090ff",
         "navigationBarTextStyle": "white",
