@@ -129,12 +129,11 @@ Page({
             wx.stopBluetoothDevicesDiscovery({
                 success: function (res) {
                     // console.log('停止搜寻附近的蓝牙外围设备', res);
-                    // wxLog.info(JSON.stringify({
-                    //     page: `home`,
-                    //     name: `stopBluetoothDevicesDiscovery`,
-                    //     devices: res
-                    // }));
                     resolve(true);
+                },
+                fail: function (err) {
+                    // console.log('停止搜寻附近的蓝牙外围设备', err);
+                    resolve(false);
                 }
             })
         })
@@ -148,6 +147,9 @@ Page({
         console.log('蓝牙初始化成功？', result);
         if (!result) {
             this.hideLoading();
+            this.setData({
+                pageNodata: true
+            })
         }
         if (result) {
             wx.startBluetoothDevicesDiscovery({
