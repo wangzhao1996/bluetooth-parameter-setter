@@ -12,7 +12,7 @@
         <view class="PageItem">
             <van-row>
                 <van-col offset="8" span="8" data-item="{{ currentSOC }}" bindtap="setItemClick">
-                    <van-circle layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="{{ gradientColor }}" value="{{ renderObj.NwCarSoc }}" text="{{ renderObj.NwCarSoc }}%" />
+                    <van-circle type="2d" layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="{{ gradientColor }}" value="{{ renderObj.NwCarSoc }}" text="{{ renderObj.NwCarSoc }}%" />
                 </van-col>
             </van-row>
             <van-row>

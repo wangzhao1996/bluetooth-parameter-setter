@@ -18,7 +18,7 @@
         <view class="PageItem">
             <van-row>
                 <van-col offset="8" span="8">
-                    <van-circle layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="#58BE6A" value="{{ upgradeProgress }}" text="{{ upgradeProgress ? upgradeProgress + '%' : upgradeText }}" />
+                    <van-circle type="2d" layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="#58BE6A" value="{{ upgradeProgress }}" text="{{ upgradeProgress ? upgradeProgress + '%' : upgradeText }}" />
                 </van-col>
             </van-row>
         </view>
