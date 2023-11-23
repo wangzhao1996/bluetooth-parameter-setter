@@ -18,7 +18,7 @@
         <view class="PageItem">
             <van-row>
                 <van-col offset="8" span="8">
-                    <van-circle layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="#58BE6A" value="{{ upgradeProgress }}" text="{{ upgradeProgress ? upgradeProgress + '%' : upgradeText }}" />
+                    <van-circle type="2d" layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="#58BE6A" value="{{ upgradeProgress }}" text="{{ upgradeProgress ? upgradeProgress + '%' : upgradeText }}" />
                 </van-col>
             </van-row>
         </view>
@@ -62,7 +62,7 @@
         <view class="PageItem">
             <van-row>
                 <van-col offset="8" span="8" data-item="{{ currentSOC }}" bindtap="setItemClick">
-                    <van-circle layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="{{ gradientColor }}" value="{{ renderObj.BatSoc }}" text="{{ renderObj.BatSoc }}%" />
+                    <van-circle type="2d" layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="{{ gradientColor }}" value="{{ renderObj.BatSoc }}" text="{{ renderObj.BatSoc }}%" />
                 </van-col>
             </van-row>
             <van-row>
@@ -73,8 +73,8 @@
             <van-cell-group>
                 <block wx:for="{{ renderItems }}" wx:key="index">
                     <!-- 运行代码、软件版本 -->
-                    <block wx:if="{{ item.key === 'RunCode' || item.key === 'SoftVer' }}">
-                        <van-field label="{{ item.actionLabelName }}" value="{{ item.actionList[item.title * 1] || item.title }}" label-class="rendervin__color" input-class="rendervin__color" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}">
+                    <block wx:if="{{ item.key === 'RunCode' || item.key === 'SoftVer' || item.key === 'AddKw' || item.key === 'CCStatus' }}">
+                        <van-field label="{{ item.actionLabelName }}" value="{{ item.actionList[item.title * 1] || (item.title + item.subtitle) }}" label-class="rendervin__color" input-class="rendervin__color" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}">
                             <van-button wx:if="{{ !item.isReadyOnly }}" slot="button" size="small" type="primary" data-item="{{ item }}" bind:click="setItemClick">{{ renderObj.BattType ? '更新' : '设置' }}{{ item.actionLabelName }}</van-button>
                         </van-field>
                     </block>
@@ -83,7 +83,7 @@
             <van-grid column-num="{{ 5 }}">
                 <block wx:for="{{ renderItems }}" wx:key="index">
                     <block wx:if="{{ !item.isHideItem }}">
-                        <van-grid-item content-class="TextCenter" icon="/imgs/icon/{{ item.imgName }}.png" text="{{ item.label }}" subtext="{{ item.title }}{{ item.subtitle }}" data-item="{{ item }}" bindtap="setItemClick" />
+                        <van-grid-item content-class="TextCenter" dot="{{ !!item.actionType }}" icon="/imgs/icon/{{ item.imgName }}.png" text="{{ item.label }}" subtext="{{ item.title }}{{ item.subtitle }}" data-item="{{ item }}" bindtap="setItemClick" />
                     </block>
                 </block>
             </van-grid>
@@ -107,6 +107,7 @@
         </view>
     </view>
 </view>
+
 <!-- 设置项目 -->
 <van-popup show="{{ settingPopupShow }}" round="{{ true }}" z-index="1000" custom-style="width: 90%;" bind:close="setItemHide">
     <view class="setting-popup">

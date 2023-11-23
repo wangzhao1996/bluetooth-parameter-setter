@@ -3,23 +3,52 @@ import {
     compareXY
 } from "../utils/index";
 
+/**
+ * @typedef {Object} __tempData
+ * @property {number} AddKw - 当前功率
+ * @property {number} BatSoc - 充电进度
+ * @property {number} CCStatus - 状态 - 0:未知 1:已插枪 2:未插枪
+ * @property {number} HigTemp - 当前最高温度
+ * @property {number} LowTemp - 当前最低温度
+ * @property {number} MaxBattAH - 电池容量
+ * @property {number} MaxHigVol - 最高电压
+ * @property {number} MaxLowVol - 最低电压
+ * @property {number} MeasCur - 测量电流
+ * @property {number} MeasVol - 测量电压
+ * @property {number} MaxTemp - 最高允许温度
+ * @property {number} NeedCur - 需求电流
+ * @property {number} NeedVol - 需求电压
+ * @property {number} NowStatus - 当前放电状态
+ * @property {number} OutCur - 输出电流
+ * @property {number} OutVol - 输出电压
+ * @property {number} RunCode - 故障状态(运行代码)
+ * @property {number} SetDevSoc - 终止SOC
+ * @property {number} SingleV - 单体电压
+ * @property {string} SoftVer - 软件版本
+ * @property {number} WorkTime - 取电时长
+ */
 let __tempData = {
-    BatSoc: 0, // 充电进度
-    NowStatus: 0, // 当前放电状态
-    RunCode: 0, // 运行代码
-    NeedVol: 0, // 需求电压
-    NeedCur: 0, // 需求电流
-    MeasVol: 0, // 测量电压
-    MeasCur: 0, // 测量电流
-    MaxTemp: 0, // 最高允许温度
-    HigTemp: 0, // 当前最高温度
-    LowTemp: 0, // 当前最低温度
-    SingleV: 0, // 单体电压
-    MaxBattAH: 0, // 电池容量
-    WorkTime: 0, // 取电时长
-    SoftVer: 'v1.0', // 软件版本
-    MaxHigVol: 0, // 最高电压
-    MaxLowVol: 0, // 最低电压
+    AddKw: 0,
+    BatSoc: 0,
+    CCStatus: 0,
+    HigTemp: 0,
+    LowTemp: 0,
+    MaxBattAH: 0,
+    MaxHigVol: 0,
+    MaxLowVol: 0,
+    MeasCur: 0,
+    MeasVol: 0,
+    MaxTemp: 0,
+    NeedCur: 0,
+    NeedVol: 0,
+    NowStatus: 0,
+    OutCur: 0,
+    OutVol: 0,
+    RunCode: 0,
+    SetDevSoc: 0,
+    SingleV: 0,
+    SoftVer: 'v1.0.0',
+    WorkTime: 0,
 };
 
 module.exports = Behavior({
@@ -28,6 +57,7 @@ module.exports = Behavior({
      * 组件的初始数据
      */
     data: {
+        __upgradeCode: 'MaxHigVol:999', // 用于升级的代码密语
         __tempData: JSON.parse(JSON.stringify(__tempData)),
         renderObj: JSON.parse(JSON.stringify(__tempData)),
         gradientColor: { // 设置渐变
@@ -60,7 +90,6 @@ module.exports = Behavior({
             label: `软件版本\n`,
             title: `v1.0`,
             subtitle: ``,
-            imgName: `daima`,
             isHideItem: true, // 不展示
             isReadyOnly: true, // 只读
             actionLabelName: `软件版本`,
@@ -93,6 +122,27 @@ module.exports = Behavior({
                 127: `BMS发出了关机请求`,
             }
         }, {
+            key: `AddKw`,
+            label: `当前功率\n`,
+            title: `0`,
+            subtitle: `Kw`,
+            isHideItem: true, // 不展示
+            isReadyOnly: true, // 只读
+            actionLabelName: `当前功率`,
+        }, {
+            key: `CCStatus`, // 字段 key
+            label: `插枪状态\n`, // 描述
+            title: `0`, // 数据
+            subtitle: ``, // 单位
+            isHideItem: true, // 不展示
+            isReadyOnly: true, // 只读
+            actionLabelName: `插枪状态`,
+            actionList: {
+                0: `未知`,
+                1: `已插枪`,
+                2: `未插枪`,
+            }
+        }, {
             key: `SetDevSoc`,
             label: `终止SOC\n`,
             title: `0`,
@@ -100,65 +150,8 @@ module.exports = Behavior({
             imgName: `daima`,
             isReadyOnly: true, // 只读
         }, {
-            key: `MaxHigVol`,
-            // label: `最高电压\n`,
-            label: `最大电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            actionType: `input`,
-            // actionLabelName: `最高电压`,
-            actionLabelName: `最大电压`,
-            actionInputType: `digit`
-        }, {
-            key: `MaxLowVol`,
-            // label: `最低电压\n`,
-            label: `最小电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            actionType: `input`,
-            // actionLabelName: `最低电压`,
-            actionLabelName: `最小电压`,
-            actionInputType: `digit`
-        }, {
-            key: `WorkTime`,
-            label: `取电时长\n`,
-            title: `0`,
-            subtitle: `Min`,
-            imgName: `shijian`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `NeedVol`,
-            label: `需求电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `NeedCur`,
-            label: `需求电流\n`,
-            title: `0`,
-            subtitle: `A`,
-            imgName: `dianliu`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `MeasVol`,
-            label: `测量电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `MeasCur`,
-            label: `测量电流\n`,
-            title: `0`,
-            subtitle: `A`,
-            imgName: `dianliu`,
-            isReadyOnly: true, // 只读
-        }, {
-            key: `MaxTemp`,
-            label: `允许温度\n`,
+            key: `LowTemp`,
+            label: `最低温度\n`,
             title: `0`,
             subtitle: `℃`,
             imgName: `wendu`,
@@ -171,8 +164,8 @@ module.exports = Behavior({
             imgName: `wendu`,
             isReadyOnly: true, // 只读
         }, {
-            key: `LowTemp`,
-            label: `最低温度\n`,
+            key: `MaxTemp`,
+            label: `允许温度\n`,
             title: `0`,
             subtitle: `℃`,
             imgName: `wendu`,
@@ -183,6 +176,73 @@ module.exports = Behavior({
             title: `0`,
             subtitle: `V`,
             imgName: `dianya`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `NeedVol`,
+            label: `需求电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `OutVol`,
+            label: `输出电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `MeasVol`,
+            label: `测量电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `MaxLowVol`,
+            label: `最小电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+            actionType: `input`,
+            actionLabelName: `最小电压`,
+            actionInputType: `digit`
+        }, {
+            key: `MaxHigVol`,
+            label: `最大电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+            actionType: `input`,
+            actionLabelName: `最大电压`,
+            actionInputType: `digit`
+        }, {
+            key: `NeedCur`,
+            label: `需求电流\n`,
+            title: `0`,
+            subtitle: `A`,
+            imgName: `dianliu`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `OutCur`,
+            label: `输出电流\n`,
+            title: `0`,
+            subtitle: `A`,
+            imgName: `dianliu`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `MeasCur`,
+            label: `测量电流\n`,
+            title: `0`,
+            subtitle: `A`,
+            imgName: `dianliu`,
+            isReadyOnly: true, // 只读
+        }, {
+            key: `WorkTime`,
+            label: `取电时长\n`,
+            title: `0`,
+            subtitle: `Min`,
+            imgName: `shijian`,
             isReadyOnly: true, // 只读
         }, {
             key: `MaxBattAH`,
