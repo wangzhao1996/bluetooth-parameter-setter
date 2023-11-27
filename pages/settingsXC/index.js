@@ -61,6 +61,7 @@ Page({
         if (this.data._navHeight) {
             Notify({
                 ...options,
+                zIndex: 9999,
                 top: this.data._navHeight
             })
             return

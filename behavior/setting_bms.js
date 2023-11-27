@@ -3,25 +3,56 @@ import {
     compareXY
 } from "../utils/index";
 
+/**
+ * @typedef {Object} __tempData
+ * @property {number} AddKwh - 充电
+ * @property {number} BatHTemp - 最高电池温度
+ * @property {number} BatLTemp - 最低电池温度
+ * @property {number} BatSoc - 充电进度
+ * @property {number} CCStatus - 状态 - 0:未知 1:已插枪 2:未插枪
+ * @property {number} BattType - 电池类型
+ * @property {number} BtCapAH - 电池容量
+ * @property {number} BtMaxCru - 最大允许电流
+ * @property {number} BtMaxTemp - 最大允许温度
+ * @property {number} CarBtVol - 当前总电压
+ * @property {number} CharMode - 充电模式
+ * @property {number} DemandCru - 需求电流
+ * @property {number} DemandVol - 需求电压
+ * @property {number} EstimTime - 剩余充电时长
+ * @property {number} FuCarStop - 自动关停状态 - 0:关闭 1:开启
+ * @property {number} MaxCharVol - 最大充电电压
+ * @property {number} MaxSinVol - 单体最大电压
+ * @property {number} NowStatus - 当前放电状态
+ * @property {number} NwCarSoc - 当前SOC
+ * @property {number} NwMaxSiVol - 当前单体最高电池电压
+ * @property {number} OutCur - 输出电流
+ * @property {number} OutVol - 输出电压
+ * @property {number} RatedVol - 额定总电压
+ * @property {string} VinCode - 车架号VIN码
+ */
 let __tempData = {
-    NwCarSoc: 0, // 当前SOC
-    NowStatus: 0, // 当前放电状态
-    MaxCharVol: 0, // 最大充电电压
-    BattType: 0, // 电池类型
-    BtCapAH: 0, // 电池容量
-    RatedVol: 0, // 额定总电压
-    MaxSinVol: 0, // 单体最大电压
-    BtMaxCru: 0, // 最大允许电流
-    BtMaxTemp: 0, // 最大允许温度
-    CarBtVol: 0, // 当前总电压
-    DemandVol: 0, // 需求电压
-    DemandCru: 0, // 需求电流
-    CharMode: 0, // 充电模式
-    NwMaxSiVol: 0, // 当前单体最高电池电压
-    EstimTime: 0, // 剩余充电时长
-    BatHTemp: 0, // 最高电池温度
-    BatLTemp: 0, // 最低电池温度
-    VinCode: '', // 车架号VIN码
+    AddKwh: 0,
+    BatHTemp: 0,
+    BatLTemp: 0,
+    BattType: 0,
+    BtCapAH: 0,
+    BtMaxCru: 0,
+    BtMaxTemp: 0,
+    CarBtVol: 0,
+    CharMode: 0,
+    DemandCru: 0,
+    DemandVol: 0,
+    EstimTime: 0,
+    FuCarStop: 0,
+    MaxCharVol: 0,
+    MaxSinVol: 0,
+    NowStatus: 0,
+    NwCarSoc: 0,
+    NwMaxSiVol: 0,
+    OutCur: 0,
+    OutVol: 0,
+    RatedVol: 0,
+    VinCode: ''
 };
 
 module.exports = Behavior({
@@ -30,6 +61,7 @@ module.exports = Behavior({
      * 组件的初始数据
      */
     data: {
+        __upgradeCode: 'MaxCharVol:999', // 用于升级的代码密语
         __tempData: JSON.parse(JSON.stringify(__tempData)),
         renderObj: JSON.parse(JSON.stringify(__tempData)),
         gradientColor: { // 设置渐变
@@ -57,6 +89,45 @@ module.exports = Behavior({
             actionInputType: `text`
         },
         renderItems: [{
+            key: `AddKwh`,
+            label: `充电\n`,
+            title: `0`,
+            subtitle: ``,
+            isHideItem: true, // 不展示
+            isReadyOnly: true, // 只读
+            actionLabelName: `充电`,
+        }, {
+            key: `CCStatus`, // 字段 key
+            label: `插枪状态\n`, // 描述
+            title: `0`, // 数据
+            subtitle: ``, // 单位
+            isHideItem: true, // 不展示
+            isReadyOnly: true, // 只读
+            actionLabelName: `插枪状态`,
+            actionList: {
+                0: `未知`,
+                1: `已插枪`,
+                2: `未插枪`,
+            }
+        }, {
+            key: `CarBtVol`,
+            label: `当前\n总电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+        }, {
+            key: `OutVol`,
+            label: `输出\n电压\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianya`,
+        }, {
+            key: `OutCur`,
+            label: `输出\n电流\n`,
+            title: `0`,
+            subtitle: `V`,
+            imgName: `dianliu`,
+        }, {
             key: `MaxCharVol`, // 字段 key
             label: `最大\n充电电压\n`, // 描述
             title: `0`, // 数据
@@ -74,15 +145,6 @@ module.exports = Behavior({
             actionType: `input`,
             actionLabelName: `单体最大电压`,
             actionInputType: `digit`
-        }, {
-            key: `CarBtVol`,
-            label: `当前\n总电压\n`,
-            title: `0`,
-            subtitle: `V`,
-            imgName: `dianya`,
-            // actionType: `input`,
-            // actionLabelName: `当前总电压`,
-            // actionInputType: `digit`
         }, {
             key: `DemandVol`,
             label: `需求\n电压\n`,
@@ -270,13 +332,38 @@ module.exports = Behavior({
         /**
          * 点击发送：开始放电
          */
+        settingOpenClick() {
+            if (this.data.renderObj.FuCarStop === 1) {
+                return
+            }
+            wx.showLoading({
+                title: '请稍后…',
+                mask: true
+            })
+            this.data.send_data = `SetBmsSta:1`;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击发送：结束放电
+         */
+        settingCloseClick() {
+            if (this.data.renderObj.FuCarStop === 0) {
+                return
+            }
+            wx.showLoading({
+                title: '请稍后…',
+                mask: true
+            })
+            this.data.send_data = `FuCarStop:0`;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击发送：开始放电
+         */
         settingStartClick() {
             // 不能下发数据
-            wx.showToast({
-                icon: 'error',
-                title: '不能控制'
-            })
-            return
             wx.showLoading({
                 title: '请稍后…',
                 mask: true

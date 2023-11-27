@@ -54,7 +54,8 @@ page {
 .Page {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    background: linear-gradient(#e8ebe3, #dfe5dd);
+    min-height: 100vh;
 }
 
 .PageWarpper {

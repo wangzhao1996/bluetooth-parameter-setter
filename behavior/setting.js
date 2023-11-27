@@ -259,6 +259,13 @@ module.exports = Behavior({
         setUpgradeConfirmClick: function() {
             this.data.isUpdating = true;
             const _this = this;
+            if (!this.data.__upgradeCode) {
+                this.onNotify && this.onNotify({ 
+                    type: 'danger',
+                    message: '升级码错误！！！请修改！！！'
+                });
+                return
+            }
             try {
                 const fm = wx.getFileSystemManager();
                 wx.downloadFile({
@@ -273,7 +280,7 @@ module.exports = Behavior({
                             wx.showLoading({
                                 title: '请稍后……'
                             })
-                            _this.data.send_data = `MaxHigVol:999`;
+                            _this.data.send_data = _this.data.__upgradeCode;
                             // 发送密语事件
                             _this.bingButtonSendData();
                             // 3 秒后开始更新
@@ -315,10 +322,20 @@ module.exports = Behavior({
                                             _this.setData({
                                                 upgradeProgress: Math.floor((i / slicedArrayBuffers.length) * 100)
                                             })
-                                            _this.data._setUpgradeTimer = setTimeout(() => {
-                                                clearTimeout(_this.data._setUpgradeTimer);
+                                            // i 从 0 开始，每 100 毫秒写入一次
+                                            // _this.data._setUpgradeTimer = setTimeout(() => {
+                                            //     clearTimeout(_this.data._setUpgradeTimer);
+                                            //     realWriteData(i + 1);
+                                            // }, 100);
+                                            // 优化上述逻辑：i 从 0 开始，每写入 50 次，延迟 300 毫秒后再写入
+                                            if (i && i % 50 === 0) {
+                                                _this.data._setUpgradeTimer = setTimeout(() => {
+                                                    clearTimeout(_this.data._setUpgradeTimer);
+                                                    realWriteData(i + 1);
+                                                }, 300);
+                                            } else {
                                                 realWriteData(i + 1);
-                                            }, 100);
+                                            }
                                         },
                                         fail: () => {
                                             this.onNotify && this.onNotify({ 
