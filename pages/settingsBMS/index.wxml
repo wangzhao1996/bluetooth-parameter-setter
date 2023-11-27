@@ -5,10 +5,60 @@
             <view class="PageNavBarItem" bindtap="pageNavBarBackClick">
                 <van-icon name="arrow-left" size="20px" />
             </view>
+            <view wx:if="{{ !isUpgradePage }}" class="PageNavBarItem" bindtap="pageNavBarSettingClick">
+                <van-icon name="setting-o" size="20px" />
+            </view>
+            <view wx:if="{{ isUpgradePage }}" class="PageNavBarItem" bindtap="pageNavBarQuitSettingClick">
+                <van-icon name="setting" size="20px" />
+            </view>
         </view>
     </van-nav-bar>
+    <!-- 更新中的页面 -->
+    <view wx:if="{{ isUpgradePage }}" class="PageWarpper PageWarpperUpgrade">
+        <view class="PageItem">
+            <van-row>
+                <van-col offset="8" span="8">
+                    <van-circle type="2d" layer-color="#efefef" fill="#ffffff" stroke-width="{{ 8 }}" size="{{ 120 }}" color="#58BE6A" value="{{ upgradeProgress }}" text="{{ upgradeProgress ? upgradeProgress + '%' : upgradeText }}" />
+                </van-col>
+            </van-row>
+        </view>
+        <block wx:if="{{ upgradeProgress }}">
+            <view class="PageItem">
+                <van-row>
+                    <van-col offset="2" span="20" custom-class="TextCenter">{{ renderObj.RunCode }}</van-col>
+                </van-row>
+            </view>
+            <view wx:for="{{ [0, 1, 2] }}" wx:key="index" class="PageItem">
+                <van-row>
+                    <van-col offset="2" span="20" custom-class="TextCenter">{{ upgradeProgress ? '正在更新，请勿退出！！！' : '' }}</van-col>
+                </van-row>
+            </view>
+        </block>
+        <view class="PageItem">
+            <block wx:if="{{ !upgradeProgress }}">
+                <form bindsubmit="setUpgradeClick">
+                    <view class="PageItem">
+                        <van-row>
+                            <van-col offset="1" span="22">
+                                <van-cell-group>
+                                    <van-field name="url" type="textarea" placeholder="请粘贴BIN下载地址" input-class="PageTextArea" autosize="{{ true }}" />
+                                </van-cell-group>
+                            </van-col>
+                        </van-row>
+                    </view>
+                    <view class="PageItem">
+                        <van-row custom-class="PageItem">
+                            <van-col offset="1" span="22">
+                                <van-button type="primary" size="large" form-type="submit">点击开始更新</van-button>
+                            </van-col>
+                        </van-row>
+                    </view>
+                </form>
+            </block>
+        </view>
+    </view>
     <!-- 未更新状态 -->
-    <view class="PageWarpper">
+    <view wx:if="{{ !isUpgradePage }}"class="PageWarpper">
         <view class="PageItem">
             <van-row>
                 <van-col offset="8" span="8" data-item="{{ currentSOC }}" bindtap="setItemClick">
@@ -21,6 +71,16 @@
         </view>
         <view class="PageItem">
             <van-cell-group>
+                <block wx:for="{{ renderItems }}" wx:key="index">
+                    <!-- 插抢状态 -->
+                    <block wx:if="{{ item.key === 'CCStatus' }}">
+                        <van-field label="{{ item.actionLabelName }}" value="{{ item.actionList[item.title * 1] }}" label-class="rendervin__color" input-class="rendervin__color" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}">
+                            <van-button wx:if="{{ !item.isReadyOnly }}" slot="button" size="small" type="primary" data-item="{{ item }}" bind:click="setItemClick">{{ renderObj.BattType ? '更新' : '设置' }}{{ item.actionLabelName }}</van-button>
+                        </van-field>
+                    </block>
+                </block>
+                <!-- 充电 -->
+                <van-field label="充电" value="{{ renderObj.AddKwh ? '正在充电' + renderObj.AddKwh + 'Kwh' : '已停止充电' }}" label-class="rendervin__color" input-class="rendervin__color" placeholder-style="color: #333333;" readonly="{{ true }}" center="{{ true }}" use-button-slot="{{ true }}" title-width="{{ 80 }}" />
                 <block wx:for="{{ renderItems }}" wx:key="index">
                     <!-- 电池类型、充电模式 -->
                     <block wx:if="{{ item.key === 'BattType' || item.key === 'CharMode' }}">
@@ -37,7 +97,7 @@
             <van-grid column-num="{{ 5 }}">
                 <block wx:for="{{ renderItems }}" wx:key="index">
                     <block wx:if="{{ !item.isHideItem }}">
-                        <van-grid-item content-class="TextCenter" icon="/imgs/icon/{{ item.imgName }}.png" text="{{ item.label }}" subtext="{{ item.title }}{{ item.subtitle }}" data-item="{{ item }}" bindtap="setItemClick" />
+                        <van-grid-item content-class="TextCenter" dot="{{ !!item.actionType }}" icon="/imgs/icon/{{ item.imgName }}.png" text="{{ item.label }}" subtext="{{ item.title }}{{ item.subtitle }}" data-item="{{ item }}" bindtap="setItemClick" />
                     </block>
                 </block>
             </van-grid>
@@ -45,7 +105,11 @@
         <view class="PageWarpperBottom">
             <view class="PageItem PageBottom">
                 <van-row>
-                    <van-col offset="2" span="20">
+                    <van-col offset="1" span="10">
+                        <van-button wx:if="{{ renderObj.FuCarStop * 1 === 1 }}" type="danger" size="large" bind:click="settingCloseClick">充满自停(关)</van-button>
+                        <van-button wx:else type="primary" size="large" bind:click="settingOpenClick">充满自停(开)</van-button>
+                    </van-col>
+                    <van-col offset="2" span="10">
                         <van-button wx:if="{{ renderObj.NowStatus * 1 }}" type="danger" size="large" bind:click="settingEndClick">停止充电</van-button>
                         <van-button wx:else type="primary" size="large" bind:click="settingStartClick">等待充电</van-button>
                     </van-col>
@@ -54,10 +118,12 @@
         </view>
     </view>
 </view>
+
 <!-- 选择项目 -->
 <van-popup show="{{ settingPickerShow }}" round="{{ true }}" position="bottom" z-index="1000" bind:close="pickerCancelClick">
     <van-picker show-toolbar="{{ true }}" default-index="{{ settingPickerInfo.title * 1 }}" columns="{{ settingPickerInfo.actionList }}" bind:confirm="pickerConfirmClick" bind:cancel="pickerCancelClick" />
 </van-popup>
+
 <!-- 设置项目 -->
 <van-popup show="{{ settingPopupShow }}" round="{{ true }}" z-index="1000" custom-style="width: 90%;" bind:close="setItemHide">
     <view class="setting-popup">
@@ -72,3 +138,8 @@
         </form>
     </view>
 </van-popup>
+
+<!-- 提示消息 -->
+<van-dialog id="van-dialog" bind:confirm="setUpgradeConfirmClick" bind:cancel="setUpgradeCancelClick" />
+<!-- 通知栏 -->
+<van-notify id="van-notify" />
