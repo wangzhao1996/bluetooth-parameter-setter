@@ -1,6 +1,9 @@
 {
     "enablePullDownRefresh": true,
     "usingComponents": {
+        "van-action-sheet": "@vant/weapp/action-sheet/index",
+        "van-row": "@vant/weapp/row/index",
+        "van-col": "@vant/weapp/col/index",
         "van-button": "@vant/weapp/button/index",
         "van-empty": "@vant/weapp/empty/index"
     }

@@ -18,7 +18,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
         info: null,
         badge: null,
         text: String,
+        // !!!!!!
         subtext: String,
+        // !!!!!!
         useSlot: Boolean,
     },
     data: {
