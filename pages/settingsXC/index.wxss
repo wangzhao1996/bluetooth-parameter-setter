@@ -118,8 +118,13 @@
 
 .info-setting-label {
     font-size: 24rpx;
+    line-height: 24rpx;
     color: #7AAACD;
     margin-bottom: 6rpx;
+}
+
+.info-setting-label.weui-flex {
+    align-items: center;
 }
 
 .info-setting-value {

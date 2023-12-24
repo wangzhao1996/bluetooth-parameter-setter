@@ -4,6 +4,8 @@
     "backgroundColorBottom": "#02060C",
     "usingComponents": {
         "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
+        "mp-actionSheet": "weui-miniprogram/actionsheet/actionsheet",
+        "mp-icon": "weui-miniprogram/icon/icon",
         "wz-progress": "./components/wz-progress/index"
     }
 }

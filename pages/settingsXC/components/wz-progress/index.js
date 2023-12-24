@@ -43,7 +43,6 @@ Component({
             if (progress > 100) {
                 progress = 100
             }
-            console.log(progress);
         }
     }
 })

@@ -4,22 +4,20 @@ import {
 } from "../utils/index";
 
 let __tempData = {
+    AltCur: 0, // 交流电流
+    AltVol: 0, // 交流电压
     BatSoc: 0, // 充电进度
+    CarVol: 0, // 车辆电压
+    OutKw: 0, // 输出功率
+    OutKwh: 0, // 已放度数
     NowStatus: 0, // 当前放电状态
-    RunCode: 0, // 运行代码
-    NeedVol: 0, // 需求电压
-    NeedCur: 0, // 需求电流
-    MeasVol: 0, // 测量电压
-    MeasCur: 0, // 测量电流
-    MaxTemp: 0, // 最高允许温度
-    HigTemp: 0, // 当前最高温度
-    LowTemp: 0, // 当前最低温度
+    SetDevSoc: 0, // 终止SOC
+    SetStopDur: 0, // 终止放电时长
+    SetStopKwh: 0, // 终止放电度数
+    SetStopMode: 0, // 终止模式
     SingleV: 0, // 单体电压
-    MaxBattAH: 0, // 电池容量
-    WorkTime: 0, // 取电时长
     SoftVer: 'v1.0', // 软件版本
-    MaxHigVol: 0, // 最高电压
-    MaxLowVol: 0, // 最低电压
+    WorkTime: 0, // 取电时长
 };
 
 module.exports = Behavior({
@@ -28,88 +26,92 @@ module.exports = Behavior({
      * 组件的初始数据
      */
     data: {
+        showStopModeActionsheet: false,
         __tempData: JSON.parse(JSON.stringify(__tempData)),
         renderObj: JSON.parse(JSON.stringify(__tempData)),
-        currentSOC: { // 当前SOC
-            key: `BatSoc`,
-            label: `当前SOC`,
-            title: `0`,
-            subtitle: ``,
-            imgName: ``,
-            isReadyOnly: true, // 只读
-            actionType: `input`,
-            actionLabelName: `当前SOC`,
-            actionInputType: `number`
-        },
         currentSetDevSoc: {
             key: `SetDevSoc`,
-            label: `设置终止放电SOC`,
+            label: `终止放电SOC`,
             title: ``,
-            subtitle: ``,
-            imgName: ``,
-            actionType: `input`,
-            actionLabelName: `终止放电SOC`,
-            actionInputType: `number`
+            subtitle: `%`
+        },
+        currentSetStopKwh: {
+            key: `SetStopKwh`,
+            label: `终止放电度数`,
+            title: ``,
+            subtitle: `°`
+        },
+        currentSetStopDur: {
+            key: `SetStopDur`,
+            label: `终止放电时长`,
+            title: ``,
+            subtitle: `Min`
         },
         renderItems: [{
             key: `SetDevSoc`,
             label: `终止SOC\n`,
             title: `0`,
             subtitle: ``,
-            imgName: `daima`,
-            isReadyOnly: true, // 只读
         }, {
-            key: `MeasCur`,
-            label: `测量电流\n`,
+            key: `SetStopKwh`,
+            label: `终止放电度数\n`,
+            title: `0`,
+            subtitle: ``,
+        }, {
+            key: `SetStopDur`,
+            label: `终止放电时长\n`,
+            title: `0`,
+            subtitle: ``,
+        }, {
+            key: `AltCur`,
+            label: `交流电流\n`,
             title: `0`,
             subtitle: `A`,
-            imgName: `dianliu`,
-            isReadyOnly: true, // 只读
         }, {
-            key: `MeasVol`,
-            label: `测量电压\n`,
+            key: `AltVol`,
+            label: `交流电压\n`,
             title: `0`,
             subtitle: `V`,
-            imgName: `dianya`,
-            isReadyOnly: true, // 只读
         }, {
-            key: `HigTemp`,
-            // label: `最高温度\n`,
-            label: `电池温度\n`,
+            key: `OutKw`,
+            label: `输出功率\n`,
             title: `0`,
-            subtitle: `℃`,
-            imgName: `wendu`,
-            isReadyOnly: true, // 只读
+            subtitle: `Kw`,
         }, {
             key: `SingleV`,
             label: `单体电压\n`,
             title: `0`,
             subtitle: `V`,
-            imgName: `dianya`,
-            isReadyOnly: true, // 只读
         }, {
-            key: `MaxBattAH`,
-            label: `电池容量\n`,
+            key: `OutKwh`,
+            label: `已放度数\n`,
             title: `0`,
-            subtitle: `AH`,
-            imgName: `rongliang`,
-            isReadyOnly: true, // 只读
+            subtitle: `度`,
         }, {
             key: `WorkTime`,
             label: `取电时长\n`,
             title: `0`,
             subtitle: `Min`,
-            imgName: `shijian`,
-            isReadyOnly: true, // 只读
+        }, {
+            key: `CarVol`,
+            label: `车辆电压\n`,
+            title: `0`,
+            subtitle: `V`,
         }, {
             key: `SoftVer`,
             label: `软件版本\n`,
             title: `v1.0`,
             subtitle: ``,
-            imgName: `daima`,
-            isHideItem: true, // 不展示
-            isReadyOnly: true, // 只读
             actionLabelName: `软件版本`,
+        }, {
+            key: `SetStopMode`,
+            label: `停止模式`,
+            title: `0`,
+            actionList: [
+                { text: '设置终止SOC', value: 0 },
+                { text: '设置终止放电度数', value: 1 },
+                { text: '设置终止放电时长', value: 2 },
+            ]
         }]
     },
 
@@ -137,7 +139,7 @@ module.exports = Behavior({
         },
 
         /**
-         * 点击设置终止放电SOC-加
+         * 点击设置终止放电SOC-加 1
          */
         setDevSocAddClick() {
             const {
@@ -153,7 +155,7 @@ module.exports = Behavior({
         },
 
         /**
-         * 点击设置终止放电SOC-减
+         * 点击设置终止放电SOC-减 1
          */
         setDevSocReduceClick() {
             const {
@@ -164,6 +166,95 @@ module.exports = Behavior({
             } = this.data;
             const value = title ? (title * 1) : 0;
             let sendData = `${key}:${value - 1}`;
+            this.data.send_data = sendData;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击设置终止放电度数-加 0.2 度
+         */
+        setStopKwhAddClick() {
+            const {
+                currentSetStopKwh: {
+                    key,
+                    title
+                }
+            } = this.data;
+            const value = title ? (title * 1) : 0;
+            let sendData = `${key}:${value + 1}`;
+            this.data.send_data = sendData;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击设置终止放电度数-减 0.2 度
+         */
+        setStopKwhReduceClick() {
+            const {
+                currentSetStopKwh: {
+                    key,
+                    title
+                }
+            } = this.data;
+            const value = title ? (title * 1) : 0;
+            let sendData = `${key}:${value - 1}`;
+            this.data.send_data = sendData;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击设置终止放电时长-加 10 min
+         */
+        setStopDurAddClick() {
+            const {
+                currentSetDevSoc: {
+                    key,
+                    title
+                }
+            } = this.data;
+            const value = title ? (title * 1) : 0;
+            let sendData = `${key}:${value + 10}`;
+            this.data.send_data = sendData;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击设置终止放电时长-减 10 min
+         */
+        setStopDurReduceClick() {
+            const {
+                currentSetDevSoc: {
+                    key,
+                    title
+                }
+            } = this.data;
+            const value = title ? (title * 1) : 0;
+            let sendData = `${key}:${value - 10}`;
+            this.data.send_data = sendData;
+            this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
+        },
+
+        /**
+         * 点击切换终止模式
+         */
+        handleStopModeActionsheetShow() {
+            this.setData({
+                showStopModeActionsheet: true
+            })
+        },
+        stopModeChange: function (event) {
+            this.setData({
+                showStopModeActionsheet: false
+            })
+            const {
+                value
+            } = event.detail;
+            const currentInfo = this.data.renderItems.find(e => e.key === 'SetStopMode');
+            if (currentInfo.title * 1 === value * 1) {
+                // 未改变
+                return
+            }
+            let sendData = `${currentInfo.key}:${value}`;
             this.data.send_data = sendData;
             this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
         },
@@ -204,8 +295,9 @@ module.exports = Behavior({
             const {
                 renderObj,
                 __tempData,
-                currentSOC,
                 currentSetDevSoc,
+                currentSetStopKwh,
+                currentSetStopDur,
                 renderItems
             } = this.data;
             if (!compareXY(renderObj, __tempData)) {
@@ -219,13 +311,17 @@ module.exports = Behavior({
             });
             this.setData({
                 renderObj: renderResult,
-                currentSOC: {
-                    ...currentSOC,
-                    title: renderResult['BatSoc']
-                },
                 currentSetDevSoc: {
                     ...currentSetDevSoc,
                     title: renderResult['SetDevSoc']
+                },
+                currentSetStopKwh: {
+                    ...currentSetStopKwh,
+                    title: renderResult['SetStopKwh']
+                },
+                currentSetStopDur: {
+                    ...currentSetStopDur,
+                    title: renderResult['SetStopDur']
                 },
                 renderItems: resultItems
             })

@@ -7,10 +7,10 @@
     </view>
     <view class="circle-wrapper">
         <view class="weui-flex circle-info">
-            <wz-progress value="{{ currentSOC.title * 1 }}">
+            <wz-progress value="{{ renderObj.BatSoc * 1 }}">
                 <view class="progress weui-flex">
                     <image class="progress-icon" src="../../imgs/icon/vector.png" />
-                    <view class="progress-number">{{ currentSOC.title }}<text class="unit">%</text></view>
+                    <view class="progress-number">{{ renderObj.BatSoc }}<text class="unit">%</text></view>
                 </view>
             </wz-progress>
         </view>
@@ -18,12 +18,12 @@
     <view class="info-items weui-flex">
         <block wx:for="{{ renderItems }}" wx:key="index">
             <!-- 测量电流 -->
-            <view wx:if="{{ item.key === 'MeasCur' }}" class="info-item weui-flex banner_a_background_img">
+            <view wx:if="{{ item.key === 'AltCur' }}" class="info-item weui-flex banner_a_background_img">
                 <view class="info-item-label">{{ item.label }}</view>
                 <view class="info-item-value">{{ item.title }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
             <!-- 测量电压 -->
-            <view wx:if="{{ item.key === 'MeasVol' }}" class="info-item weui-flex banner_v_background_img">
+            <view wx:if="{{ item.key === 'AltVol' }}" class="info-item weui-flex banner_v_background_img">
                 <view class="info-item-label">{{ item.label }}</view>
                 <view class="info-item-value">{{ item.title }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
@@ -31,26 +31,47 @@
     </view>
     <view class="info-seting weui-flex">
         <block wx:for="{{ renderItems }}" wx:key="index">
-            <!-- 电池温度 -->
-            <view wx:if="{{ item.key === 'HigTemp' }}" class="info-setting-item weui-flex card_w_background_img">
+            <!-- 输出功率 -->
+            <view wx:if="{{ item.key === 'OutKw' }}" class="info-setting-item weui-flex card_background_img">
                 <view class="info-setting-label">{{ item.label }}</view>
                 <view class="info-setting-value">{{ item.title || '0' }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
-            <!-- 取电时长 -->
-            <view wx:if="{{ item.key === 'WorkTime' }}" class="info-setting-item weui-flex card_t_background_img">
+            <!-- 已放度数 -->
+            <view wx:if="{{ item.key === 'OutKwh' }}" class="info-setting-item weui-flex card_background_img">
                 <view class="info-setting-label">{{ item.label }}</view>
                 <view class="info-setting-value">{{ item.title || '0' }}<text class="unit">{{ item.subtitle || '' }}</text></view>
             </view>
+            <!-- 终止放电SOC -->
+            <block wx:if="{{ item.key === 'SetStopMode' }}">
+                <!-- 设置终止SOC = SetDevSoc -->
+                <view wx:if="{{ item.title * 1 === 0 }}" class="info-setting-item weui-flex card_background_img">
+                    <view class="info-setting-label weui-flex" bindtap="handleStopModeActionsheetShow">{{ currentSetDevSoc.label }}<mp-icon type="field" icon="arrow" color="#7AAACD" size="{{10}}"></mp-icon></view>
+                    <view class="info-setting-value">{{ currentSetDevSoc.title || '0' }}<text class="unit">{{ currentSetDevSoc.subtitle}}</text></view>
+                    <view class="info-setting-btn weui-flex">
+                        <image class="info-setting-button" src="../../imgs/icon/set_reduce.png" bindtap="setDevSocReduceClick" />
+                        <image class="info-setting-button" src="../../imgs/icon/set_add.png" bindtap="setDevSocAddClick" />
+                    </view>
+                </view>
+                <!-- 设置终止放电度数 = SetStopKwh -->
+                <view wx:if="{{ item.title * 1 === 1 }}" class="info-setting-item weui-flex card_background_img">
+                    <view class="info-setting-label weui-flex" bindtap="handleStopModeActionsheetShow">{{ currentSetStopKwh.label }}<mp-icon type="field" icon="arrow" color="#7AAACD" size="{{10}}"></mp-icon></view>
+                    <view class="info-setting-value">{{ currentSetStopKwh.title || '0' }}<text class="unit">{{ currentSetStopKwh.subtitle}}</text></view>
+                    <view class="info-setting-btn weui-flex">
+                        <image class="info-setting-button" src="../../imgs/icon/set_reduce.png" bindtap="setStopKwhReduceClick" />
+                        <image class="info-setting-button" src="../../imgs/icon/set_add.png" bindtap="setStopKwhAddClick" />
+                    </view>
+                </view>
+                <!-- 设置终止放电时长 = SetStopDur -->
+                <view wx:if="{{ item.title * 1 === 2 }}" class="info-setting-item weui-flex card_background_img">
+                    <view class="info-setting-label weui-flex" bindtap="handleStopModeActionsheetShow">{{ currentSetStopDur.label }}<mp-icon type="field" icon="arrow" color="#7AAACD" size="{{10}}"></mp-icon></view>
+                    <view class="info-setting-value">{{ currentSetStopDur.title || '0' }}<text class="unit">{{ currentSetStopDur.subtitle}}</text></view>
+                    <view class="info-setting-btn weui-flex">
+                        <image class="info-setting-button" src="../../imgs/icon/set_reduce.png" bindtap="setStopDurReduceClick" />
+                        <image class="info-setting-button" src="../../imgs/icon/set_add.png" bindtap="setStopDurAddClick" />
+                    </view>
+                </view>
+            </block>
         </block>
-        <!-- 终止放电SOC -->
-        <view class="info-setting-item weui-flex card_background_img">
-            <view class="info-setting-label">{{ currentSetDevSoc.actionLabelName }}</view>
-            <view class="info-setting-value">{{ currentSetDevSoc.title || '0' }}<text class="unit">%</text></view>
-            <view class="info-setting-btn weui-flex">
-                <image class="info-setting-button" src="../../imgs/icon/set_reduce.png" bindtap="setDevSocReduceClick" />
-                <image class="info-setting-button" src="../../imgs/icon/set_add.png" bindtap="setDevSocAddClick" />
-            </view>
-        </view>
     </view>
     <!-- 开关 -->
     <view class="button-setting weui-flex">
@@ -60,12 +81,12 @@
     <view class="info-position">
         <view class="info-position-fixed weui-flex">
             <block wx:for="{{ renderItems }}" wx:key="index">
-                <!-- 单体电压 -->
-                <view wx:if="{{ item.key === 'SingleV' }}" class="info-position-item weui-flex">
+                <!-- 取电时长 -->
+                <view wx:if="{{ item.key === 'WorkTime' }}" class="info-position-item weui-flex">
                     {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
                 </view>
-                <!-- 电池容量 -->
-                <view wx:if="{{ item.key === 'MaxBattAH' }}" class="info-position-item weui-flex">
+                <!-- 车辆电压 -->
+                <view wx:if="{{ item.key === 'CarVol' }}" class="info-position-item weui-flex">
                     {{ item.label }}: {{ item.title }}{{ item.subtitle || '' }}
                 </view>
                 <!-- 软件版本 -->
@@ -75,15 +96,9 @@
             </block>
         </view>
     </view>
-    <!-- <view class="info-seting">
-        <view class="info-seting-title">需求设置</view>
-        <view class="info-setting-item weui-flex">
-            <view class="info-setting-label">{{ currentSetDevSoc.actionLabelName }}</view>
-            <view class="info-setting-actions weui-flex">
-                <image class="info-setting-action-icon" src="../../imgs/icon/reduce.svg" bindtap="setDevSocReduceClick" />
-                <view class="info-setting-action-value">{{ currentSetDevSoc.title || '0%' }}</view>
-                <image class="info-setting-action-icon" src="../../imgs/icon/add.svg" bindtap="setDevSocAddClick" />
-            </view>
-        </view>
-    </view> -->
 </view>
+<block wx:for="{{ renderItems }}" wx:key="index">
+    <block wx:if="{{ item.key === 'SetStopMode' }}">
+        <mp-actionSheet title="选择终止模式" show="{{ showStopModeActionsheet }}" actions="{{ item.actionList }}" bindactiontap="stopModeChange" />
+    </block>
+</block>
