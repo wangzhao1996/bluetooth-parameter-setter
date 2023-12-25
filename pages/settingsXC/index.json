@@ -5,6 +5,11 @@
     "usingComponents": {
         "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
         "mp-actionSheet": "weui-miniprogram/actionsheet/actionsheet",
+        "mp-dialog": "weui-miniprogram/dialog/dialog",
+        "mp-form-page": "weui-miniprogram/form-page/form-page",
+        "mp-form": "weui-miniprogram/form/form",
+        "mp-cells": "weui-miniprogram/cells/cells",
+        "mp-cell": "weui-miniprogram/cell/cell",
         "mp-icon": "weui-miniprogram/icon/icon",
         "wz-progress": "./components/wz-progress/index"
     }

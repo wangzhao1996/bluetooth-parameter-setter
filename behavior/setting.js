@@ -13,9 +13,37 @@ module.exports = Behavior({
         writeServiceId: 'invalid',
         writeCharacteristicId: 'invalid',
         writeServiceSearchIndex: 0,
+
+        _countDownTimer: null,
+        _setUpgradeTimer: null,
+        _downloadUrl: ``,       // 下载地址
+        isUpdating: false,      // 更新状态中
+        // upgradeText: `…`,       // 倒计时文案
+        upgradeProgress: 0,     // 更新进度
+        scrollIntoView: ``
     },
 
     methods: {
+        /**
+         * 页面显示
+         */
+        onShowClick: function () {
+            wx.onBLECharacteristicValueChange((res) => {
+                const values = String.fromCharCode.apply(null, new Uint8Array(res.value))
+                this.handleRenderData && this.handleRenderData(values);
+            })
+            wx.setKeepScreenOn({
+                keepScreenOn: true
+            })
+        },
+
+        /**
+         * 页面隐藏
+         */
+        onHideClick: function () {
+            
+        },
+
         seekFirstNotifyCharacteristic: function () {
             var that = this;
             if (that.data.notifyServiceSearchIndex < that.data.services.length && that.data.notifyCharacteristicId == 'invalid') {
@@ -112,13 +140,6 @@ module.exports = Behavior({
             })
         },
 
-        onShowClick: function () {
-            wx.onBLECharacteristicValueChange((res) => {
-                const values = String.fromCharCode.apply(null, new Uint8Array(res.value))
-                this.handleRenderData && this.handleRenderData(values);
-            })
-        },
-
         onUnloadClick: function () {
             wx.closeBLEConnection({
                 deviceId: this.data.devId,
@@ -127,7 +148,6 @@ module.exports = Behavior({
                 }
             })
         },
-
 
         encode_utf8: function (s) {
             return unescape(encodeURIComponent(s));
@@ -182,6 +202,188 @@ module.exports = Behavior({
                 })
             }
             realWriteData(sendloop, 0);
+        },
+
+        sliceArrayBuffer: function(arrayBuffer, chunkSize) {
+            const arrayBuffers = [];
+            const uint8Array = new Uint8Array(arrayBuffer);
+            let offset = 0;
+            let totalSize = 0;
+
+            while (offset < uint8Array.length) {
+                const chunk = uint8Array.slice(offset, offset + chunkSize);
+                const chunkArrayBuffer = chunk.buffer;
+                arrayBuffers.push(chunkArrayBuffer);
+                offset += chunkSize;
+                totalSize += chunk.byteLength;
+            }
+
+            // 输出文件总大小
+            console.log("文件总大小: " + totalSize + " 字节");
+
+            // 输出最后一个切片文件大小
+            const lastChunkSize = uint8Array.length - (offset - chunkSize);
+            console.log("最后一个切片文件大小: " + lastChunkSize + " 字节");
+
+            return arrayBuffers;
+        },
+
+        setUpgradeClick: function (event) {
+            const {
+                value: {
+                    url
+                }
+            } = event.detail;
+            const pattern = /^https:\/\/dcdn\.it120\.cc\/.*\.bin$/;
+            if (!pattern.test(url)) {
+                this.onNotify && this.onNotify({ 
+                    type: 'danger',
+                    message: '下载地址错误！！！请修改！！！',
+                });
+                return
+            }
+            this.data._downloadUrl = url;
+            this.onDialog({
+                title: `提示！`,
+                message: `您的设备即将进行升级,\n请确保升级过程中不会断电以及退出小程序,\n升级完成后请重启设备!`,
+                cancelButtonText: '取消升级',
+                confirmButtonText: '开始升级'
+            })
+        },
+
+        /**
+         * 点击开始升级
+         */
+        setUpgradeConfirmClick: function() {
+            this.data.isUpdating = true;
+            const _this = this;
+            if (!this.data.__upgradeCode) {
+                this.onNotify && this.onNotify({ 
+                    type: 'danger',
+                    message: '升级码错误！！！请修改！！！'
+                });
+                return
+            }
+            try {
+                const fm = wx.getFileSystemManager();
+                wx.downloadFile({
+                    url: _this.data._downloadUrl,
+                    success: res => {
+                        const tempFilePath = res.tempFilePath;
+                        try {
+                            const content = fm.readFileSync(tempFilePath);
+                            const chunkSize = 20; // 你想要的切片大小，这里设置为 500 字节
+                            const slicedArrayBuffers = this.sliceArrayBuffer(content, chunkSize);
+                            wx.showLoading({
+                                title: '请稍后……'
+                            })
+                            _this.data.send_data = _this.data.__upgradeCode;
+                            // 发送密语事件
+                            _this.bingButtonSendData();
+                            // 3 秒后开始更新
+                            _this.timeCallBack(() => {
+                                function realWriteData(i) {
+                                    if (i >= slicedArrayBuffers.length) {
+                                        _this.onNotify({
+                                            type: 'success',
+                                            message: '升级成功！'
+                                        })
+                                        _this.data.isUpdating = false;
+                                        _this.data._downloadUrl = ``;
+                                        _this.pageNavBarQuitSettingClick();
+                                        _this.setData({
+                                            // upgradeText: `…`,
+                                            upgradeProgress: 0
+                                        })
+                                        return
+                                    }
+                                    wx.writeBLECharacteristicValue({
+                                        deviceId: _this.data.devId,
+                                        serviceId: _this.data.writeServiceId,
+                                        characteristicId: _this.data.writeCharacteristicId,
+                                        // 这里的value是ArrayBuffer类型
+                                        value: slicedArrayBuffers[i],
+                                        writeType: `write`,
+                                        success: (r) => {
+                                            _this.setData({
+                                                upgradeProgress: Math.floor((i / slicedArrayBuffers.length) * 100)
+                                            })
+                                            // i 从 0 开始，每 100 毫秒写入一次
+                                            // _this.data._setUpgradeTimer = setTimeout(() => {
+                                            //     clearTimeout(_this.data._setUpgradeTimer);
+                                            //     realWriteData(i + 1);
+                                            // }, 100);
+                                            // 优化上述逻辑：i 从 0 开始，每写入 50 次，延迟 300 毫秒后再写入
+                                            if (i && i % 50 === 0) {
+                                                _this.data._setUpgradeTimer = setTimeout(() => {
+                                                    clearTimeout(_this.data._setUpgradeTimer);
+                                                    realWriteData(i + 1);
+                                                }, 300);
+                                            } else {
+                                                realWriteData(i + 1);
+                                            }
+                                        },
+                                        fail: () => {
+                                            this.onNotify && this.onNotify({ 
+                                                type: 'danger',
+                                                message: '升级失败，返厂重修！！！'
+                                            });
+                                        }
+                                    })
+                                }
+                                realWriteData(0);
+                            });
+                        } catch (er) {
+                            this.data.isUpdating = false;
+                            this.onNotify && this.onNotify({ 
+                                type: 'danger',
+                                message: '文件切片失败，请重试！'
+                            });
+                        }
+                    },
+                    fail: () => {
+                        this.data.isUpdating = false;
+                        this.onNotify && this.onNotify({
+                            type: 'danger',
+                            message: '文件下载失败，请重试！'
+                        });
+                    }
+                })
+            } catch (error) {
+                this.data.isUpdating = false;
+                this.onNotify && this.onNotify({ 
+                    type: 'danger',
+                    message: '客户端未知错误，请重试！'
+                });
+            }
+        },
+
+        /**
+         * 取消升级
+         */
+        setUpgradeCancelClick: function() {
+            this.data._downloadUrl = ``;
+            this.pageNavBarQuitSettingClick();
+        },
+
+        timeCallBack(callback = null, timer = 3) {
+            clearTimeout(this.data._countDownTimer);
+            this.data._countDownTimer = null;
+            if (timer === 0) {
+                callback && callback();
+                return
+            }
+            this.data._countDownTimer = setTimeout(() => {
+                // this.setData({
+                //     upgradeText: timer
+                // })
+                wx.showToast({
+                    icon: 'none',
+                    title: `倒计时 ${timer} 秒`,
+                    duration: 800
+                })
+                this.timeCallBack(callback, timer - 1);
+            }, 1000);
         }
     }
 });

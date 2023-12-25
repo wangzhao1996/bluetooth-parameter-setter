@@ -1,5 +1,0 @@
-.back_background_img {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEW4vuEAAAC4vuDy9vqzzN63vt+4wOG0veG3vuG5vN/8/v62wOP8//7k5/TW3PDGy+b6/f36/P74+/zz9/rb3u+zv9m8vOTS2u/8//77/v73+fz2+fvn6/Tt8fft8ffP1O78//5EuISWAAAAIHRSTlMrACeVBRofDiQW5Qr4XkUx4c/Dm0sUEz7x7bisaIF+O2r6OZAAAAFFSURBVEjHpdfrcoMgEIbhrxsQUWPMQdNzuf+rLJNOa8Npw/r+zjNxFGHFU6p+1g0RQNTopU/+JAFNQ7iLGsNDZQmJyKoytMimC9AQCpHJQQ0mnYSqBVurYqgIqJGocgCpFUbXycsVro6t/Q81KtIrNKjK/EGqg/QLNSqzP1ChOnWDth7aG6R6SB5mbun7S7cvSONhg0Qfg3NvBdh4SIjbOeeGffFa0SPu7N1zycGzBWGHV++6C4rN0JE7eTeN3IJFeG+uR++OV8Z5FtybcfLudAAXBfDSeTecd1FjBO/rXKYJ5aYc7BAkvlTxzYkex9eDjyOzADp+AcyyJbeIF7n0tcq9yJ/ciyzeOuSblXx7lG/Igr/U8kNHfszJD1b5UR4MHbxTm8eVeLDinXwkkw+B28dO/k/t9tF6+zAf1y/r58Oc/nz4Bh6DFxCrvCDVAAAAAElFTkSuQmCC');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-}

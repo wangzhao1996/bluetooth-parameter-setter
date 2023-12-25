@@ -1,0 +1,12 @@
+.upgrade__text {
+    text-align: center;
+}
+
+.weui-form,
+.weui-cells {
+    background-color: transparent;
+}
+
+.weui-cell {
+    color: #fefefe;
+}

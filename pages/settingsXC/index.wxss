@@ -1,20 +1,38 @@
 /* page/settings/index.wxss */
 @import "../../fonts/stylesheet.wxss";
-@import "./styles/css_img_back.wxss";
 @import "./styles/css_img_banner.wxss";
 @import "./styles/css_img_bg.wxss";
 @import "./styles/css_img_button.wxss";
 @import "./styles/css_img_card.wxss";
+@import "./styles/css_page1.wxss";
 
 .page {
     color: #ffffff;
 }
 
-.nav-icon {
-    position: relative;
+.nav__lefts {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 132rpx;
+    height: 56rpx;
+}
+
+.nav-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 56rpx;
     height: 56rpx;
     border-radius: 50%;
+    overflow: hidden;
+    background: rgba(100, 100, 100, 0.5);
+}
+
+.nav-icon {
+    display: block;
+    width: 32rpx;
+    height: 32rpx;
 }
 
 .circle-wrapper {

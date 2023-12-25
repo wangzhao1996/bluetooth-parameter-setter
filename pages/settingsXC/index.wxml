@@ -1,8 +1,63 @@
 <!--page/settings/index.wxml-->
-<view class="page page_background_img">
+<view wx:if="{{ isUpgradePage }}" class="page">
     <view style="height: 0; padding-top: 204rpx;">
         <mp-navigation-bar back="{{ flase }}" color="#fefefe" title="{{ navTitle }}">
-            <view slot="left" class="nav-icon back_background_img" bindtap="backClick"></view>
+            <view slot="left" class="nav__lefts">
+                <view class="nav-icon-box" bindtap="pageNavBarBackClick">
+                    <image class="nav-icon" src="../../imgs/svg/left0.svg" />
+                </view>
+                <view class="nav-icon-box" bindtap="pageNavBarQuitSettingClick">
+                    <image class="nav-icon" src="../../imgs/svg/setting0.svg" />
+                </view>
+            </view>
+        </mp-navigation-bar>
+    </view>
+    <!-- 填写文件地址 -->
+    <block wx:if="{{ !upgradeProgress }}">
+        <mp-form-page>
+            <mp-form id="form" rules="{{rules}}" models="{{formData}}">
+                <mp-cells>
+                    <mp-cell prop="url" title="下载地址">
+                        <input bindinput="formInputChange" data-field="url" class="weui-input" placeholder="请输入或粘贴"/>
+                    </mp-cell>
+                </mp-cells>
+            </mp-form>
+            <view slot="button">
+                <button class="weui-btn" type="primary" bindtap="submitForm">点击开始更新</button>
+            </view>
+        </mp-form-page>
+    </block>
+    <block wx:if="{{ upgradeProgress }}">
+        <progress
+            percent="{{ upgradeProgress }}"
+            show-info="{{ true }}"
+            border-radius="3"
+            stroke-width="6"
+            activeColor="#7AAACD"
+            backgroundColor="#E5E5E5"
+            active="{{ upgradeProgress < 100 }}"
+            active-mode="forwards"
+            duration="{{ 30 }}"
+        />
+        <!-- 运行代码 -->
+        <view class="upgrade__text">{{ renderObj.RunCode }}</view>
+        <!-- 提示语 -->
+        <view wx:for="{{ [0, 1, 2] }}" wx:key="index" class="upgrade__text">
+            {{ upgradeProgress ? '正在更新，请勿退出！！！' : '' }}
+        </view>
+    </block>
+</view>
+<view wx:if="{{ !isUpgradePage }}" class="page page_background_img">
+    <view style="height: 0; padding-top: 204rpx;">
+        <mp-navigation-bar back="{{ flase }}" color="#fefefe" title="{{ navTitle }}">
+            <view slot="left" class="nav__lefts">
+                <view class="nav-icon-box" bindtap="pageNavBarBackClick">
+                    <image class="nav-icon" src="../../imgs/svg/left0.svg" />
+                </view>
+                <view class="nav-icon-box" bindtap="pageNavBarSettingClick">
+                    <image class="nav-icon" src="../../imgs/svg/setting0.svg" />
+                </view>
+            </view>
         </mp-navigation-bar>
     </view>
     <view class="circle-wrapper">
@@ -101,4 +156,14 @@
     <block wx:if="{{ item.key === 'SetStopMode' }}">
         <mp-actionSheet title="选择终止模式" show="{{ showStopModeActionsheet }}" actions="{{ item.actionList }}" bindactiontap="stopModeChange" />
     </block>
+</block>
+<block wx:if="{{ dialogShow }}">
+    <mp-dialog
+        show="{{ dialogShow }}"
+        title="{{ dialogData.title }}"
+        buttons="{{ dialogData.buttons }}"
+        bindbuttontap="dialogButtonClick"
+    >
+        <view>{{ dialogData.message }}</view>
+    </mp-dialog>
 </block>

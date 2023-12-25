@@ -27,6 +27,8 @@ module.exports = Behavior({
      */
     data: {
         showStopModeActionsheet: false,
+        __upgradeCode: 'MaxHigVol:999', // 用于升级的代码密语
+        // __upgradeCode: 'MaxCharVol:999', // 用于升级的代码密语
         __tempData: JSON.parse(JSON.stringify(__tempData)),
         renderObj: JSON.parse(JSON.stringify(__tempData)),
         currentSetDevSoc: {
@@ -39,13 +41,13 @@ module.exports = Behavior({
             key: `SetStopKwh`,
             label: `终止放电度数`,
             title: ``,
-            subtitle: `°`
+            subtitle: `度`
         },
         currentSetStopDur: {
             key: `SetStopDur`,
             label: `终止放电时长`,
             title: ``,
-            subtitle: `Min`
+            subtitle: `分钟`
         },
         renderItems: [{
             key: `SetDevSoc`,
@@ -91,7 +93,7 @@ module.exports = Behavior({
             key: `WorkTime`,
             label: `取电时长\n`,
             title: `0`,
-            subtitle: `Min`,
+            subtitle: `分钟`,
         }, {
             key: `CarVol`,
             label: `车辆电压\n`,
@@ -165,8 +167,11 @@ module.exports = Behavior({
                 }
             } = this.data;
             const value = title ? (title * 1) : 0;
-            let sendData = `${key}:${value - 1}`;
-            this.data.send_data = sendData;
+            const result = value - 1;
+            if (result < 0) {
+                return
+            }
+            this.data.send_data = `${key}:${result}`;
             this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
         },
 
@@ -181,7 +186,7 @@ module.exports = Behavior({
                 }
             } = this.data;
             const value = title ? (title * 1) : 0;
-            let sendData = `${key}:${value + 1}`;
+            let sendData = `${key}:${value + 0.2}`;
             this.data.send_data = sendData;
             this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
         },
@@ -197,8 +202,11 @@ module.exports = Behavior({
                 }
             } = this.data;
             const value = title ? (title * 1) : 0;
-            let sendData = `${key}:${value - 1}`;
-            this.data.send_data = sendData;
+            const result = value - 0.2;
+            if (result < 0) {
+                return
+            }
+            this.data.send_data = `${key}:${result}`;
             this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
         },
 
@@ -207,7 +215,7 @@ module.exports = Behavior({
          */
         setStopDurAddClick() {
             const {
-                currentSetDevSoc: {
+                currentSetStopDur: {
                     key,
                     title
                 }
@@ -223,14 +231,17 @@ module.exports = Behavior({
          */
         setStopDurReduceClick() {
             const {
-                currentSetDevSoc: {
+                currentSetStopDur: {
                     key,
                     title
                 }
             } = this.data;
             const value = title ? (title * 1) : 0;
-            let sendData = `${key}:${value - 10}`;
-            this.data.send_data = sendData;
+            const result = value - 10;
+            if (result < 0) {
+                return
+            }
+            this.data.send_data = `${key}:${result}`;
             this.bingButtonSendData && this.bingButtonSendData(); // 发送事件
         },
 
@@ -242,6 +253,7 @@ module.exports = Behavior({
                 showStopModeActionsheet: true
             })
         },
+
         stopModeChange: function (event) {
             this.setData({
                 showStopModeActionsheet: false
