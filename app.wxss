@@ -1,8 +1,16 @@
-
 page {
     font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
     font-size: 32rpx;
     color: #333333;
+    --my-primary-backcolor: #07c160;
+}
+
+.TextPrimaryColor {
+    color: var(--my-primary-backcolor);
+}
+
+.TextCenter {
+    text-align: center;
 }
 
 .border-box {
@@ -18,7 +26,7 @@ page {
 
 .van-grid-item__text .subtext {
     font-size: 36rpx;
-    color: #07c160;
+    color: var(--my-primary-backcolor);
 }
 
 .van-grid-item__content {
@@ -79,8 +87,4 @@ page {
 
 .PageTextArea {
     line-height: 1.2 !important;
-}
-
-.TextCenter {
-    text-align: center;
 }

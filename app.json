@@ -12,5 +12,14 @@
         "backgroundTextStyle": "dark",
         "navigationBarTitleText": "蓝牙设备"
     },
-    "lazyCodeLoading": "requiredComponents"
+    "lazyCodeLoading": "requiredComponents",
+    "requiredPrivateInfos": [
+        "getLocation"
+    ],
+    "permission": {
+        "scope.userLocation": {
+            "desc": "授权定位有助于提高蓝牙的连接成功率"
+        }
+    },
+    "__usePrivacyCheck__": true
 }
