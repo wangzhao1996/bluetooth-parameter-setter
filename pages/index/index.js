@@ -238,6 +238,7 @@ Page({
      * 开始搜索
      */
     async searchStart() {
+        const result = await this.initBluetooth();
         console.log('蓝牙初始化成功？');
         if (!result) {
             this.hideLoading();
