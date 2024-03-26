@@ -23,11 +23,11 @@
             </van-row>
         </view>
         <block wx:if="{{ upgradeProgress }}">
-            <view class="PageItem">
+            <!-- <view class="PageItem">
                 <van-row>
                     <van-col offset="2" span="20" custom-class="TextCenter">{{ renderObj.RunCode }}</van-col>
                 </van-row>
-            </view>
+            </view> -->
             <view wx:for="{{ [0, 1, 2] }}" wx:key="index" class="PageItem">
                 <van-row>
                     <van-col offset="2" span="20" custom-class="TextCenter">{{ upgradeProgress ? '正在更新，请勿退出！！！' : '' }}</van-col>
@@ -36,12 +36,19 @@
         </block>
         <view class="PageItem">
             <block wx:if="{{ !upgradeProgress }}">
-                <form bindsubmit="setUpgradeClick">
+                <view class="PageItem">
+                    <van-row custom-class="PageItem">
+                        <van-col offset="1" span="22">
+                            <van-button type="primary" size="large" bind:click="selectVersionClick">选择更新版本</van-button>
+                        </van-col>
+                    </van-row>
+                </view>
+                <!-- <form bindsubmit="setUpgradeClick">
                     <view class="PageItem">
                         <van-row>
                             <van-col offset="1" span="22">
                                 <van-cell-group>
-                                    <van-field name="url" type="textarea" placeholder="请粘贴BIN下载地址" input-class="PageTextArea" autosize="{{ true }}" />
+                                    <van-field name="url" type="textarea" placeholder="请粘贴BIN下载地址" input-class="PageTextArea" autosize="{{ true }}" value="{{ downLinkUrl }}" />
                                 </van-cell-group>
                             </van-col>
                         </van-row>
@@ -53,7 +60,7 @@
                             </van-col>
                         </van-row>
                     </view>
-                </form>
+                </form> -->
             </block>
         </view>
     </view>
@@ -143,3 +150,10 @@
 <van-dialog id="van-dialog" bind:confirm="setUpgradeConfirmClick" bind:cancel="setUpgradeCancelClick" />
 <!-- 通知栏 -->
 <van-notify id="van-notify" />
+<!-- 选择版本号 -->
+<van-action-sheet
+    show="{{ actionSheetShow }}"
+    actions="{{ versionList }}"
+    bind:close="onVersionClose"
+    bind:select="onVersionSelect"
+/>

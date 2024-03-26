@@ -5,6 +5,7 @@
     "backgroundColor": "#efefef",
     "navigationStyle": "custom",
     "usingComponents": {
+        "van-action-sheet": "@vant/weapp/action-sheet/index",
         "van-dialog": "@vant/weapp/dialog/index",
         "van-notify": "@vant/weapp/notify/index",
         "van-nav-bar": "@vant/weapp/nav-bar/index",

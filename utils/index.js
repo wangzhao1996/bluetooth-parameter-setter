@@ -51,6 +51,7 @@ export const handleRSSI = RSSI => {
     }
     return `/imgs/scan/1.png`;
 }
+
 /**
  * 判断对象x，和对象y是否相等；
  * @param x

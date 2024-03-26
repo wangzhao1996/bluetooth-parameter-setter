@@ -5,17 +5,26 @@
 <van-empty wx:if="{{ pageNodata && !deviceList.length }}" description="可以下拉刷新，可以点击按钮刷新！">
     <van-button round type="primary" class="refresh-button" bind:click="onReLoad">点击刷新</van-button>
 </van-empty>
-<navigator wx:for="{{ deviceList }}" wx:key="deviceId" class="dev" url="{{ item.jumpUrl }}">
-    <view class="dev__info">
-        <view class="dev__info__name text__line1">
-            {{item.name}}
+<block
+    wx:for="{{ deviceList }}"
+    wx:key="deviceId"
+    url="{{ item.jumpUrl }}">
+    <view
+        class="dev"
+        data-id="{{ item.deviceId }}"
+        bindtap="handleDevTap"
+    >
+        <view class="dev__info">
+            <view class="dev__info__name text__line1">
+                {{ item.name }}
+            </view>
+            <view class="dev__info__deviceId text__line1">
+                deviceId: {{ item.deviceId }}
+            </view>
         </view>
-        <view class="dev__info__deviceId text__line1">
-            deviceId: {{item.deviceId}}
+        <view class="dev__rssi" style="vertical-align:middle">
+            <image class="dev__rssi__image" src="{{item.img}}" />
+            <view class="dev__rssi__number">{{item.rssi}}</view>
         </view>
     </view>
-    <view class="dev__rssi" style="vertical-align:middle">
-        <image class="dev__rssi__image" src="{{item.img}}" />
-        <view class="dev__rssi__number">{{item.rssi}}</view>
-    </view>
-</navigator>
+</block>

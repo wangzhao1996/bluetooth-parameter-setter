@@ -1,41 +1,38 @@
 import setting from '../../behavior/setting';
+import download from '../../behavior/download';
 import setting_bms from '../../behavior/setting_bms';
 import page_navbar from '../../behavior/page_navbar';
 import Notify from '@vant/weapp/notify/notify';
 import Dialog from '@vant/weapp/dialog/dialog';
 
 Page({
-    behaviors: [setting, setting_bms, page_navbar],
+    behaviors: [setting, download, setting_bms, page_navbar],
     data: {
         _navHeight: 0,
         navTitle: ''
     },
 
     onLoad: function (options) {
-        const btDevId = options.devId ? decodeURIComponent(options.devId) : '';
-        const btName = options.name ? decodeURIComponent(options.name) : '';
-        btName && wx.setNavigationBarTitle({
-            title: btName
-        })
-        btName && this.setData({
-            navTitle: btName
-        })
-        this.data.devId = btDevId;
-        this.createBLEConnection(btDevId);
-        this.handleRenderData();
+        try {
+            const btName = options.name ? decodeURIComponent(options.name) : '';
+            btName && wx.setNavigationBarTitle({ title: btName })
+            btName && this.setData({ navTitle: btName })
+        } catch (error) {
+            // 
+        }
+        this.onLoadClick && this.onLoadClick();
     },
 
     onShow: function () {
-        this.onShowClick();
+        this.onShowClick && this.onShowClick();
     },
 
     onHide: function() {
-        this.onHideClick();
+        this.onHideClick && this.onHideClick();
     },
 
     onUnload: function () {
-        wx.hideLoading();
-        this.onUnloadClick();
+        this.onUnloadClick && this.onUnloadClick();
     },
 
     onDialog: function(options) {

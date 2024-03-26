@@ -1,14 +1,18 @@
+import ecBLE from "../../utils/ecBLE";
+import ecUI from "../../utils/ecUI";
+import wxLog from "../../utils/log";
+
 import {
     checkIsLegalDevice,
     handleDevicePath,
     handleRSSI
 } from "../../utils/index";
-var app = getApp();
 Page({
     __loadTimer: null, // 10s 倒计时
     __showLoading: false, // 展示 loading 弹窗
     data: {
         settingButtonShow: false, // 展示跳转授权页按钮
+        __deviceList: [], // 设备列表暂存
         deviceList: [], // 设备列表
         pageNodata: false, // 页面无数据
     },
@@ -17,81 +21,103 @@ Page({
     },
 
     onReady: function () {
-        wx.onBluetoothDeviceFound((devices) => {
-            // console.log(`监听搜索到新设备的事件`, devices);
-            // wxLog.info(JSON.stringify({
-            //     page: `home`,
-            //     name: `onBluetoothDeviceFound`,
-            //     devices: devices
-            // }));
-            wx.getBluetoothDevices({
-                success: (res) => {
-                    // console.log(`获取在蓝牙模块生效期间所有搜索到的蓝牙设备。包括已经和本机处于连接状态的设备。`, res);
-                    // wxLog.info(JSON.stringify({
-                    //     page: `home`,
-                    //     name: `getBluetoothDevices`,
-                    //     devices: res.devices
-                    // }));
-                    // 只展示合法设备
-                    const filterDevices = res.devices.filter(e => checkIsLegalDevice(e.name)).map(e => {
-                        return {
-                            deviceId: e.deviceId,
-                            rssi: e.RSSI,
-                            name: e.name,
-                            img: handleRSSI(e.RSSI),
-                            jumpUrl: handleDevicePath(e.deviceId, e.name)
-                        }
-                    });
-                    app.globalData.btDevices = filterDevices;
-                    this.setData({
-                        deviceList: filterDevices
-                    });
-                    if (filterDevices.length) {
-                        this.hideLoading(); // 去掉 loading
+        setInterval(() => {
+            try {
+                const result = this.data.__deviceList.filter((e) => checkIsLegalDevice(e.name));
+                const deviceList = result.map(e => {
+                    return {
+                        deviceId: e.id,
+                        rssi: e.rssi,
+                        name: e.name,
+                        img: handleRSSI(e.rssi),
+                        jumpUrl: handleDevicePath(e.id, e.name),
                     }
+                })
+                if (this.data.deviceList.length) {
+                    this.hideLoading();
                 }
-            })
-        })
+                this.setData({ deviceList })
+            } catch (error) {
+                console.error(error);
+            }
+        }, 400);
     },
 
     onShow: function () {
         if (!this.data.deviceList.length) {
             this.showLoading(); // 展示 loading
         }
-        this.searchStart(); // 开始搜索
+        this.data.__deviceList = [];
+        this.setData({
+            deviceList: []
+        }, () => {
+            var timer = setTimeout(() => {
+                clearTimeout(timer);
+                this.openBluetoothAdapter();
+            }, 100);
+        })
     },
 
     onHide: function () {
-        this.searchStop(); // 停止搜索设备
     },
 
     onUnload: function () {
-        this.searchStop(); // 停止搜索设备
     },
 
     onPullDownRefresh: function () {
         // 下拉清空记录，并重新搜索
         wx.stopPullDownRefresh();
-        this.onReLoad();
+        var timer = setTimeout(() => {
+            clearTimeout(timer);
+            this.onReLoad();
+        }, 500);
     },
 
     /**
      * 点击重试
      */
     onReLoad: function () {
+        this.data.__deviceList = [];
         this.setData({
+            deviceList: [],
             pageNodata: false,
         }, async () => {
-            await this.searchStop(); // 先停止搜索
-            await this.closeBluetooth(); // 关闭蓝牙模块
             var timer = setTimeout(() => {
+                clearTimeout(timer);
                 if (!this.data.deviceList.length) {
                     this.showLoading(); // 展示 loading
                 }
-                this.searchStart(); // 再重新搜索
-                clearTimeout(timer);
+                this.openBluetoothAdapter()
             }, 500);
         })
+    },
+
+    /**
+     * 点击连接设备
+     */
+    handleDevTap: function(event) {
+        const {
+            dataset: {
+                id
+            }
+        } = event.currentTarget;
+        const {
+            deviceList
+        } = this.data;
+        const device = deviceList.find(e => e.deviceId === id);
+        ecUI.showLoading('设备连接中')
+        ecBLE.onBLEConnectionStateChange(res => {
+            ecUI.hideLoading()
+            if (res.ok) {
+                wx.navigateTo({ url: device.jumpUrl })
+            } else {
+                ecUI.showModal(
+                    '提示',
+                    '连接失败,errCode=' + res.errCode + ',errMsg=' + res.errMsg
+                )  
+            }    
+        })
+        ecBLE.createBLEConnection(device.deviceId);
     },
 
     /**
@@ -105,7 +131,6 @@ Page({
         this.__loadTimer = setTimeout(() => {
             if (this.__showLoading) {
                 this.hideLoading(); // 去掉 loading
-                this.searchStop(); // 停止搜索
                 this.setData({
                     pageNodata: true
                 })
@@ -122,108 +147,70 @@ Page({
     },
 
     /**
-     * 停止搜索设备
+     * 打开蓝牙授权
      */
-    searchStop: function () {
-        return new Promise((resolve) => {
-            wx.stopBluetoothDevicesDiscovery({
-                success: function (res) {
-                    // console.log('停止搜寻附近的蓝牙外围设备', res);
-                    resolve(true);
-                },
-                fail: function (err) {
-                    // console.log('停止搜寻附近的蓝牙外围设备', err);
-                    resolve(false);
-                }
-            })
-        })
-    },
-
-    /**
-     * 开始搜索
-     */
-    async searchStart() {
-        const result = await this.initBluetooth();
-        console.log('蓝牙初始化成功？', result);
-        if (!result) {
-            this.hideLoading();
-            this.setData({
-                pageNodata: true
-            })
-        }
-        if (result) {
-            wx.startBluetoothDevicesDiscovery({
-                success: (res) => {
-                    // console.log('开始搜寻附近的蓝牙外围设备y', res);
-                    // wxLog.info(JSON.stringify({
-                    //     page: `home`,
-                    //     name: `startBluetoothDevicesDiscovery`,
-                    //     devices: res
-                    // }));
-                },
-                fail: (err) => {
-                    console.log('开始搜寻附近的蓝牙外围设备x', err);
-                }
-            })
-        }
-    },
-
-    /**
-     * 初始化蓝牙模块
-     */
-    initBluetooth: function () {
-        return new Promise((resolve) => {
-            wx.openBluetoothAdapter({
-                success: (res) => {
-                    // console.log(`初始化蓝牙模块y`, res);
-                    // wxLog.info(JSON.stringify({
-                    //     page: `home`,
-                    //     name: `openBluetoothAdapter`,
-                    //     devices: res
-                    // }));
-                    this.setData({
-                        settingButtonShow: false
-                    })
-                    resolve(true);
-                },
-                fail: (err) => {
-                    console.log(`初始化蓝牙模块x`, err);
-                    if (err.errno === 103 || err.errMsg === `openBluetoothAdapter:fail auth deny`) {
-                        console.log(`初始化蓝牙模块x1`);
-                        // 身份验证失败，应当跳转至授权管理页
-                        this.setData({
-                            settingButtonShow: true
-                        })
+    openBluetoothAdapter() {
+        const _this = this;
+        ecBLE.onBluetoothAdapterStateChange(res => {
+            // console.log('openBluetoothAdapter: ');
+            // console.log(res);
+            // wxLog.info(`openBluetoothAdapter: `);
+            // wxLog.info(JSON.stringify(res));
+            if (res.ok) {
+                _this.startBluetoothDevicesDiscovery();
+            } else {
+                ecUI.showModal(
+                    '提示',
+                    `Bluetooth adapter error | ${res.errCode} | ${res.errMsg}`,
+                    () => {
+                        if (res.errCode === 30001) {
+                            wx.openSystemBluetoothSetting()
+                        }
+                        if (res.errCode === 30003) {
+                            wx.openAppAuthorizeSetting()
+                        }
+                        if (res.errCode === 30004) {
+                            //跳转到小程序设置界面
+                            wx.openSetting()
+                        }
                     }
-                    resolve(false);
-                }
-            })
+                )
+            }
         })
+        ecBLE.openBluetoothAdapter()
     },
-
+    
     /**
-     * 关闭蓝牙模块
+     * 开售搜索设备
      */
-    closeBluetooth: function () {
-        return new Promise((resolve) => {
-            wx.closeBluetoothAdapter({
-                success: (res) => {
-                    // console.log(`关闭蓝牙模块y`, res);
-                    // wxLog.info(JSON.stringify({
-                    //     page: `home`,
-                    //     name: `closeBluetoothAdapter`,
-                    //     devices: res
-                    // }));
-                    this.setData({
-                        btDevices: []
-                    })
-                    resolve(true);
-                },
-                fail: (err) => {
-                    console.log(`关闭蓝牙模块x`, err);
-                    resolve(false);
+    startBluetoothDevicesDiscovery() {
+        const _this = this;
+        ecBLE.onBluetoothDeviceFound(res => {
+            // console.log('startBluetoothDevicesDiscovery: ');
+            // console.log(res);
+            // wxLog.info(`startBluetoothDevicesDiscovery: `);
+            // wxLog.info(JSON.stringify(res));
+            for (const item of _this.data.__deviceList) {
+                if (item.id === res.id) {
+                    item.name = res.name
+                    item.rssi = res.rssi
+                    return
                 }
+            }
+            let manufacturer = ''
+            if (res.name.length === 11 && res.name.startsWith('@')) {
+                manufacturer = 'eciot'
+            }
+            if (res.name.length === 15 && res.name.startsWith('BT_')) {
+                manufacturer = 'eciot'
+            }
+            _this.data.__deviceList.push({
+                id: res.id,
+                name: res.name,
+                rssi: res.rssi,
+                manufacturer,
             })
         })
-    }
+        ecBLE.startBluetoothDevicesDiscovery()
+    },
 });
